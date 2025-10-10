@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
+    </head>
+    <body>
+        {% if message %}
+        <h1>{{message}}</h1>
+        {% endif %}
+        {% if user %}
+            {% if user.name %}
+            <p>Hello {{user.name}}!</p>
+            {% else %}
+            <p>Hello {{user.email}}!</p>
+            {% endif %}
+            <a href="/logout/everywhere">Logout from all devices.</a>
+            <a href="/logout/">Logout on this device.</a>
+            <a href="/logout/there">Logout on other devices.</a>
+        {% else %}
+            <p>Hi bingxin!</p>
+        {% endif %}
+
+        <video
+        id="my-video"
+        class="video-js"
+        controls
+        preload="auto"
+        width="640"
+        height="264"
+        data-setup="{}"
+    >
+        <source src="scenery.m3u8" type="application/x-mpegURL">
+        <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a
+        web browser that
+        <a href="https://videojs.com/html5-video-support/" target="_blank"
+            >supports HTML5 video</a
+        >
+        </p>
+    </video>
+    <script src="https://vjs.zencdn.net/8.23.4/video.min.js"></script>
+    </body>
+</html>

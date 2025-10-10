@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Verify your email - Scenery</title>
+    </head>
+    <body>
+        {% if error %}
+        <h1>{{error}}</h1>
+        {% endif %}
+        <form method="post">
+            <input type="email" placeholder="Email" name="email" required>
+            {% if not email_code %}
+            <input type="text" placeholder="Verification code" name="code" required>
+            {% else %}
+            <input type="text" placeholder="Verification code" name="code" value="{{email_code}}" required>
+            {% endif %}
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>

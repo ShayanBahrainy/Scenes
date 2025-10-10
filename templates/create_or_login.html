@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login or Create an account</title>
+    </head>
+    <body>
+        {% if error %}
+        <h1>{{error}}</h1>
+        {% endif %}
+        <form method="post">
+            <input type="email" placeholder="Email" name="email" required>
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>
