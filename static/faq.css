@@ -1,0 +1,29 @@
+@import url('theme.css');
+
+
+.link {
+    color: var(--secondary-color);
+}
+
+.header {
+    color: var(--secondary-color);
+    position: fixed;
+    top: 10%;
+    left: 40%;
+}
+
+.faq {
+    position: fixed;
+    top: 20%;
+    left: 10%;
+    width: 80%;
+    height: 70%;
+    text-align: center;
+    font-size: 1.5em;
+    color: var(--secondary-color);
+    overflow-y: auto;
+}
+
+body {
+    background-color: var(--background-color);
+}

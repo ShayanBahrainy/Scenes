@@ -100,7 +100,11 @@ def account_setup():
         db.session.commit()
         return index(message="Account setup complete!")
 
-@app.route("/logout/<location>/", defaults={"location":"here"})
+@app.route("/logout/")
+def default_logout():
+    return logout_route("here")
+
+@app.route("/logout/<location>/")
 def logout_route(location):
     response = redirect("/")
     if "auth" in request.cookies:
@@ -239,6 +243,18 @@ def return_video_file(video_name, quality, file_name):
 
     path = safe_join(safe_join(video_name, quality), file_name+".ts")
     return send_from_directory('videos/', path)
+
+@app.route("/about-me")
+def about_me():
+    user = None
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        user = cookie.user if cookie else None
+    return render_template("about_me.html", user=user)
+
+@app.route("/faq")
+def faq_route():
+    return render_template("faq.html")
 
 if __name__ == "__main__":
     with app.app_context():

@@ -2,6 +2,8 @@
 <html>
     <head>
         <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
+        <link href="static/index.css" rel="stylesheet">
+        <script src="static/index.js"></script>
     </head>
     <body>
         {% if message %}
@@ -19,10 +21,21 @@
         {% else %}
             <p>Hi bingxin!</p>
         {% endif %}
-
+        <button class="hamburger closed-hamburger">☰</button>
+        <div class="menu menu-closed">
+            {% if user %}
+                <a href="/logout/everywhere">Logout from all devices.</a>
+                <a href="/logout/">Logout on this device.</a>
+                <a href="/logout/there">Logout on other devices.</a>
+            {% else %}
+                <button onclick="location='/login-start'" class="menu-button">Login</button>
+                <a onclick="location='/about-me'" class="menu-link">About Me</a>
+                <a onclick="location='/faq'" class="menu-link">FAQ</a>
+            {% endif %}
+        </div>
         <video
         id="my-video"
-        class="video-js"
+        class="video-js video-player"
         controls
         preload="auto"
         width="640"

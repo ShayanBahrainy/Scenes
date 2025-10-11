@@ -1,0 +1,89 @@
+@import url('theme.css');
+
+.video-player {
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.hamburger {
+    position: fixed;
+    left: 90%;
+    top: 2.5%;
+    background-color: transparent;
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    font-size: 3em;
+    z-index: 1;
+}
+
+.opened-hamburger {
+    transform: rotateZ(90deg);
+    transition-duration: 0.5s;
+}
+
+.closed-hamburger {
+    transform: rotateZ(0deg);
+    transition-duration: 0.5s;
+}
+
+.menu {
+    position: fixed;
+    left: 100%;
+    top: 0%;
+    height: 100%;
+    background-color: var(--background-color);
+    width: 20%;
+    z-index: 0;
+    flex-direction: column;
+    display: flex;
+    gap: 2%;
+}
+
+.menu-opened {
+    transform: translateX(-100%);
+    transition-duration: 1s;
+}
+
+.menu-closed {
+    transform: translateX(100%);
+    transition-duration: 3s;
+}
+
+
+.menu-button {
+    position: relative;
+    border: none;
+    background-color: var(--secondary-color);
+    top: 10%;
+    left: 50%;
+    width: 30%;
+    height: 5%;
+    z-index: 1;
+}
+
+.menu-button:hover {
+    background-color: var(--tint-color);
+}
+
+.menu-link {
+    display: block;
+    border: none;
+    color: var(--secondary-color);
+    z-index: 1;
+    text-decoration: none;
+    position: relative;
+    top: 10%;
+    left: 50%;
+    width: 30%;
+    height: 5%;
+}
+
+.menu-link:hover {
+    color: var(--tint-color);
+}
