@@ -81,13 +81,39 @@ class Streamer(threading.Thread):
 
     @staticmethod
     def __append_lists__(playlist1: str, playlist2: str) -> str:
-        media_substr_start = playlist2.find("#EXTINF:")
-        media_substr_end = playlist2.find("#EXT-X-ENDLIST")
-        media_substr = playlist2[media_substr_start:media_substr_end]
-        merged_list = playlist1 + "#EXT-X-DISCONTINUITY\n" + media_substr
-        return merged_list
+        "Appends playlist2 into playlist1"
+        valid_lines = []
 
-    def __init__(self, video_folder: os.PathLike):
+        second_lines = playlist2.split("\n")
+        i = 0
+        while i < len(second_lines):
+            if "#EXT-X-DISCONTINUITY" in second_lines[i]:
+                valid_lines.append(second_lines[i])
+                valid_lines.append(second_lines[i + 1])
+                valid_lines.append(second_lines[i + 2])
+                i += 3
+            if "#EXTINF:" in second_lines[i]:
+                valid_lines.append(second_lines[i])
+                valid_lines.append(second_lines[i + 1])
+                i += 2
+            i += 1
+
+        last_file_line = 4 #First line after header
+        first_lines = playlist1.split("\n")
+        for i in range(len(first_lines)):
+            if ".ts" in first_lines[i]:
+                last_file_line = i
+
+        i = last_file_line + 1
+        first_lines.insert(i, "#EXT-X-DISCONTINUITY")
+        i += 1
+        for line in valid_lines:
+            first_lines.insert(i, line)
+            i += 1
+
+        return "\n".join(first_lines)
+
+    def __init__(self, video_folder: os.PathLike, premium_qualities=[TEN_EIGHTY_P]):
         threading.Thread.__init__(self)
 
         self.videos = os.listdir(video_folder)
@@ -95,9 +121,11 @@ class Streamer(threading.Thread):
 
         self.reset_lists()
 
-        self.list_length = 0
+        self.premium_qualities = premium_qualities
 
         self.media_sequence = 0
+
+        self.list_length = 0
 
     def reset_lists(self):
         self.playlists: dict[str, str] = {}
@@ -114,18 +142,27 @@ class Streamer(threading.Thread):
 
     def remove_first(self):
         MEDIA_FILE_MARKER = "#EXTINF:"
+        DISCONTINUITY_MARKER = "#EXT-X-DISCONTINUITY"
         for quality in self.playlists.keys():
             playlist = self.playlists[quality]
 
             found = playlist.find(MEDIA_FILE_MARKER)
+            discontinuity = playlist.find(DISCONTINUITY_MARKER)
 
-            #Line and line after MEDIA_FILE_MARKER need to be deleted
-            end = playlist.find("\n", playlist.find("\n", found) + 1)
-
-            playlist = playlist[:found] + playlist[end+1:]
+            if discontinuity > 0 and discontinuity < found:
+                #Delete three lines from continuity marker, if there is one
+                end = playlist.find("\n", playlist.find("\n", playlist.find("\n", discontinuity) + 1) + 1)
+                playlist = playlist[:discontinuity] + playlist[end+1:]
+            else:
+                #Otherwise just two
+                end = playlist.find("\n", playlist.find("\n", found) + 1)
+                playlist = playlist[:found] + playlist[end+1:]
 
             self.playlists[quality] = playlist
-
+    def broke(self) -> bool:
+        if self.playlists["360"].count("#EXTM3U") > 1:
+            return True
+        return False
     def run(self):
         while True:
             if self.list_length >= self.TARGET_LIST_LENGTH:
@@ -142,18 +179,28 @@ class Streamer(threading.Thread):
                         segment_playlist = f.read()
                         segment_playlist = Streamer.__add_basepath__(segment_playlist, os.path.join(os.path.join(self.video_folder, video),quality))
                         self.playlists[quality] = Streamer.__append_lists__(self.playlists[quality], segment_playlist)
-
                 num_new_segments = segment_playlist.count("#EXTINF:")
                 self.list_length += num_new_segments
 
-            time.sleep(Streamer.TARGET_DURATION/3)
+            time.sleep(Streamer.TARGET_DURATION)
 
     def get_media_playlist(self, quality=THREE_SIXTY_P) -> str:
         return self.playlists[quality]
 
-    def get_master_playlist(self) -> str:
-        return MASTER_PLAYLIST
+    def get_master_playlist(self, premium=False) -> str:
+        if premium:
+            return MASTER_PLAYLIST
 
+        cleaned_lines = []
+        lines = MASTER_PLAYLIST.splitlines()
+        for i in range(len(lines)):
+            for premium_quality in self.premium_qualities:
+                if lines[i] != premium_quality+".m3u8":
+                    cleaned_lines.append(lines[i])
+                else:
+                    cleaned_lines.pop()
+
+        return "\n".join(cleaned_lines)
 
 if __name__ == "__main__":
     BASE_PATH = "/home/shayanbahrainy/Videos/Nature vids/converted/"

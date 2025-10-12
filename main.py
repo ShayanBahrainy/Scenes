@@ -11,9 +11,15 @@ import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://scenery:Scenery@localhost:5432/scenery'
-emailmanager = EmailManager()
-streamer = Streamer("videos/")
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 db.init_app(app)
+
+emailmanager = EmailManager()
+
+PREMIUM_QUALITIES = [Streamer.TEN_EIGHTY_P]
+
+streamer = Streamer("videos/", PREMIUM_QUALITIES)
 
 host = os.environ.get("SCENERY_DOMAIN")
 if not host:
@@ -25,7 +31,7 @@ STRIPE_ENDPOINT_SECRET = os.environ.get("STRIPE_ENDPOINT_SECRET")
 if not STRIPE_ENDPOINT_SECRET:
     STRIPE_ENDPOINT_SECRET = "whsec_5573f2cd2f99db84972c5971d7ad9afa3493d90610d026784ee3df5381b571c8"
 
-PREMIUM_QUALITIES = ["1080"]
+
 
 @app.route("/")
 def index(message=None):
@@ -109,9 +115,10 @@ def logout_route(location):
     response = redirect("/")
     if "auth" in request.cookies:
         this_cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        if not this_cookie:
+            return response
         if location == "here":
-            if this_cookie:
-                db.session.delete(this_cookie)
+            db.session.delete(this_cookie)
             response.delete_cookie("auth")
         if location == "there":
             other_cookies = db.session.query(Cookie).filter(Cookie.email == this_cookie.email).filter(Cookie.cookie != this_cookie.cookie).all()
@@ -208,7 +215,14 @@ def stripe_webhook():
 
 @app.route("/scenery.m3u8")
 def master_playlist():
-    return streamer.get_master_playlist()
+    if "auth" not in request.cookies:
+        return streamer.get_master_playlist()
+    cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+    if not cookie:
+        return streamer.get_master_playlist()
+    if cookie.user.subscription_status != "plus":
+        return streamer.get_master_playlist()
+    return streamer.get_master_playlist(True)
 
 @app.route("/<quality>.m3u8")
 def get_playlist(quality):
@@ -260,4 +274,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     streamer.start()
-    app.run("0.0.0.0")
+    app.run("0.0.0.0", debug=True)

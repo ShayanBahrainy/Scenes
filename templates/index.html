@@ -9,29 +9,21 @@
         {% if message %}
         <h1>{{message}}</h1>
         {% endif %}
-        {% if user %}
-            {% if user.name %}
-            <p>Hello {{user.name}}!</p>
-            {% else %}
-            <p>Hello {{user.email}}!</p>
-            {% endif %}
-            <a href="/logout/everywhere">Logout from all devices.</a>
-            <a href="/logout/">Logout on this device.</a>
-            <a href="/logout/there">Logout on other devices.</a>
-        {% else %}
-            <p>Hi bingxin!</p>
-        {% endif %}
         <button class="hamburger closed-hamburger">☰</button>
         <div class="menu menu-closed">
+            <p class="welcome-message">Hi{{" "+user.name if user else ""}}!</p>
             {% if user %}
-                <a href="/logout/everywhere">Logout from all devices.</a>
-                <a href="/logout/">Logout on this device.</a>
-                <a href="/logout/there">Logout on other devices.</a>
+                <select class="logout-menu custom-highlight">
+                    <option value="" selected disabled>Logout</option>
+                    <option value="here">Here</option>
+                    <option value="there">There</option>
+                    <option value="everywhere">Everywhere</option>
+                </select>
             {% else %}
                 <button onclick="location='/login-start'" class="menu-button">Login</button>
-                <a onclick="location='/about-me'" class="menu-link">About Me</a>
-                <a onclick="location='/faq'" class="menu-link">FAQ</a>
             {% endif %}
+                <a onclick="location='/about-me'" class="menu-link about-me">About Me</a>
+                <a onclick="location='/faq'" class="menu-link faq">FAQ</a>
         </div>
         <video
         id="my-video"
