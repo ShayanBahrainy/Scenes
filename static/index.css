@@ -11,7 +11,28 @@
 }
 
 .vjs-big-play-button {
-    background-color: var(--secondary-color);
+    background-color: var(--background-color) !important;
+}
+
+.vjs-icon-placeholder {
+    color: var(--secondary-color) !important;
+    background-color: var(--background-color) !important;
+}
+
+.vjs-control-bar {
+    background-color: var(--background-color) !important;
+}
+
+.vjs-volume-level {
+    color: var(--tint-color) !important;
+}
+
+.vjs-control-bar * {
+    background-color: inherit;
+}
+
+.vjs-live-display {
+    color: var(--secondary-color) !important;
 }
 
 .hamburger {
@@ -97,11 +118,7 @@
     position: absolute;
     top: 95%;
     left: 20%;
-    width: 20%;
-}
-
-.custom-highlight:focus {
-  outline-color: var(--tint-color);
+    width: 30%;
 }
 
 .logout-menu {

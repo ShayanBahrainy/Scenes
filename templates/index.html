@@ -19,6 +19,13 @@
                     <option value="there">There</option>
                     <option value="everywhere">Everywhere</option>
                 </select>
+                {% if user.subscription_status == "plus" %}
+                <form method="post" action="/create-portal-session">
+                    <button class="menu-button" type="submit">Manage Subscription</button>
+                </form>
+                {% else %}
+                    <button class="menu-button" id="subscribe">Subscribe</button>
+                {% endif %}
             {% else %}
                 <button onclick="location='/login-start'" class="menu-button">Login</button>
             {% endif %}
@@ -34,7 +41,7 @@
         height="264"
         data-setup="{}"
     >
-        <source src="scenery.m3u8" type="application/x-mpegURL">
+        <source src="scenery.m3u8" type="application/x-mpegurl">
         <p class="vjs-no-js">
         To view this video please enable JavaScript, and consider upgrading to a
         web browser that

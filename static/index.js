@@ -8,8 +8,13 @@ window.addEventListener("load", function () {
         menu.classList.toggle("menu-closed")
     });
 
-    const logoutmenu = this.document.querySelector(".logout-menu");
+    const logoutmenu = this.document.querySelector(".logout-menu")
     logoutmenu.addEventListener("change", function () {
-        window.location = "/logout/" +logoutmenu.value;
+        window.location = "/logout/" + logoutmenu.value
+    })
+
+    const subscribe = this.document.getElementById("subscribe")
+    subscribe.addEventListener("click", function () {
+        location = "/why-subscribe"
     })
 })

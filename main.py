@@ -19,11 +19,11 @@ emailmanager = EmailManager()
 
 PREMIUM_QUALITIES = [Streamer.TEN_EIGHTY_P]
 
-streamer = Streamer("videos/", PREMIUM_QUALITIES)
+streamer = Streamer("test/", PREMIUM_QUALITIES)
 
-host = os.environ.get("SCENERY_DOMAIN")
-if not host:
-    host = "127.0.0.1:5000"
+HOST = os.environ.get("SCENERY_DOMAIN")
+if not HOST:
+    HOST = "127.0.0.1:5000"
 
 SCENERY_PLUS_ID = os.environ.get("SCENERY_PLUS_ID")
 
@@ -141,12 +141,29 @@ def create_checkout_api():
             session = stripe.checkout.Session.create(mode="subscription",
                 line_items=[{"price": SCENERY_PLUS_ID, "quantity": 1}],
                 ui_mode="embedded",
-                return_url="http://" + host + "/checkout/return?session_id={CHECKOUT_SESSION_ID}",
+                return_url="http://" + HOST + "/checkout/return?session_id={CHECKOUT_SESSION_ID}",
                 customer_email=cookie.user.email if not customer else None,
                 customer=customer.stripe_id if customer else None,
             )
             return json.dumps({"clientSecret":session.client_secret})
     return Response("Not authenticated.",status=401)
+
+@app.route("/create-portal-session", methods=["POST"])
+def create_portal_api():
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        if cookie:
+            customer = db.session.query(PaymentAccount).filter(PaymentAccount.email == cookie.user.email, PaymentAccount.status == "open").one_or_none()
+            if customer:
+                session = stripe.billing_portal.Session.create(
+                    customer=customer.stripe_id,
+                    return_url="http://" + HOST + "/"
+                )
+                return redirect(session["url"])
+            r = Response("User is not subscribed.")
+            r.location = "http://" + HOST + "/subscribe"
+            return r
+    return Response("Not authenticated.", status=401)
 
 @app.route("/subscribe")
 def subscribe():
@@ -158,6 +175,15 @@ def subscribe():
     if cookie.user.subscription_status == 'plus':
         return redirect("/")
     return render_template("subscribe.html")
+
+@app.route("/why-subscribe")
+def why_subscribe():
+    user = None
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        if cookie:
+            user = cookie.user
+    return render_template("why_subscribe.html", user=user)
 
 @app.route("/checkout/return")
 def checkout_return():
@@ -242,7 +268,7 @@ def get_playlist(quality):
 
     return streamer.get_media_playlist(quality)
 
-@app.route("/videos/<video_name>/<quality>/<file_name>.ts")
+@app.route("/test/<video_name>/<quality>/<file_name>.ts")
 def return_video_file(video_name, quality, file_name):
     if quality in PREMIUM_QUALITIES:
         if "auth" not in request.cookies:
@@ -256,7 +282,7 @@ def return_video_file(video_name, quality, file_name):
             return make_response("Not authorized", 403)
 
     path = safe_join(safe_join(video_name, quality), file_name+".ts")
-    return send_from_directory('videos/', path)
+    return send_from_directory('test/', path)
 
 @app.route("/about-me")
 def about_me():

@@ -1,0 +1,67 @@
+@import url('/static/theme.css');
+
+body {
+    background-color: var(--background-color);
+}
+
+.form {
+    position: absolute;
+    left: 45%;
+    top: 40%;
+    width: 30%;
+    height: 60%;
+}
+
+.header {
+    position: absolute;
+    left: 35%;
+    top: 20%;
+    color: var(--secondary-color);
+}
+
+.email-field {
+    position: absolute;
+    border: none;
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+    border-radius: 0;
+    left: -12.5%;
+    height: 5%;
+    width: 75%;
+    box-shadow: outset 5px 5px 10px #5a7a5e,
+                outset -5px -5px 10px #89b18a;
+}
+
+.email-field::placeholder {
+    color: var(--tint-color);
+}
+
+.email-field:hover {
+    background-color: var(--tint-color);
+    color: var(--background-color);
+    transition-duration: 5s;
+}
+.email-field:hover::placeholder {
+    color: var(--background-color);
+    transition-duration: 5s;
+}
+
+.submit-button {
+    position: absolute;
+    top: 20%;
+    border: none;
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+    width: 50%;
+    height: 5%;
+    border-radius: 2.5%;
+    box-shadow: outset 5px 5px 10px #5a7a5e,
+                outset -5px -5px 10px #89b18a;
+}
+
+
+.submit-button:hover {
+    background-color: var(--tint-color);
+    color: var(--background-color);
+    transition-duration: 5s;
+}

@@ -3,3 +3,8 @@
     --secondary-color: #729b79;
     --tint-color: #295135;
 }
+
+.custom-highlight:focus {
+  outline-color: var(--tint-color);
+  border-radius: 0;
+}
