@@ -6,12 +6,21 @@ initialize();
 // Fetch Checkout Session and retrieve the client secret
 async function initialize() {
   const fetchClientSecret = async () => {
+    //Reuse secret if given.
+    const params = new URLSearchParams(window.location.search)
+
+    if (params.get('reuse_secret')) {
+      return params.get('reuse_secret')
+    }
+
     const response = await fetch("/create-checkout-session", {
       method: "POST",
     });
+
     if (!response.ok) {
         throw new Error("Failed to fetch the client secret.");
     }
+
     const { clientSecret } = await response.json();
     return clientSecret;
   };

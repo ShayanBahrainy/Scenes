@@ -21,9 +21,6 @@ body {
 
 .email-field {
     position: absolute;
-    border: none;
-    background-color: var(--secondary-color);
-    color: var(--tint-color);
     border-radius: 0;
     left: -12.5%;
     height: 5%;
@@ -34,12 +31,6 @@ body {
 
 .email-field::placeholder {
     color: var(--tint-color);
-}
-
-.email-field:hover {
-    background-color: var(--tint-color);
-    color: var(--background-color);
-    transition-duration: 5s;
 }
 .email-field:hover::placeholder {
     color: var(--background-color);

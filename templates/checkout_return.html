@@ -1,1 +1,23 @@
-{{status}}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="/static/checkout_return.css" rel="stylesheet">
+        <script src="/static/checkout_return.js"></script>
+        {% if status == 'complete' %}
+        <title>Welcome to Scenery+</title>
+        {% else %}
+        <title>Something went wrong :(</title>
+        {% endif %}
+    </head>
+    <body>
+        {% if status == 'complete' %}
+        <p class="main-content">Welcome to Scenery+</p>
+        <p class="info-line">Your transaction was successful.</p>
+        <button class="continue-button">Begin</button>
+        {% else %}
+        <p class="main-content">Do you want to try again?</p>
+        <p class="info-line">Your transaction didn't go through.</p>
+        <button class="retry-button hover-element">Try again</button>
+        {% endif %}
+    </body>
+</html>

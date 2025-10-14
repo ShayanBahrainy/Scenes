@@ -1,0 +1,71 @@
+@import url('/static/theme.css');
+
+.main-content {
+    text-align: center;
+    position: absolute;
+    top: 10%;
+    left: 20%;
+    width: 60%;
+    color: var(--secondary-color);
+    font-size: 4em;
+}
+
+.info-line {
+    text-align: center;
+    position: absolute;
+    top: 30%;
+    left: 20%;
+    width: 60%;
+    color: var(--secondary-color);
+    font-size: 2em;
+}
+
+.retry-button {
+    position: absolute;
+    top: 50%;
+    left: 45%;
+    width: 10%;
+    height: 10%;
+    transition-duration: 1s !important;
+}
+
+.continue-button {
+    position: absolute;
+    top: 50%;
+    left: 45%;
+    width: 10%;
+    height: 10%;
+    border: none;
+    background-color: var(--tint-color);
+    color: var(--secondary-color);
+    box-shadow: 10px 10px 50px 10px var(--tint-color);
+    border-radius: 5%;
+}
+
+.continue-button:hover {
+  animation: sineMove 1s alternate infinite;
+}
+
+@keyframes flash {
+  0% {
+    transform: translateX(0%) translateY(0%);
+  }
+  50% {
+    transform: translateX(50%) translateY(-50%);
+  }
+  100% {
+    transform: translateX(-50%) translateY(50%);
+  }
+}
+
+@keyframes sineMove {
+  0%   { transform: translateY(0);}
+  100% { transform: translateY(50%); }
+
+}
+
+.move-out {
+    transform: translateZ(-800px) scale(0.8) translateX(-800px);
+    opacity: 0;
+    transition: transform 1.2s ease-in, opacity 1.2s ease-in;
+}

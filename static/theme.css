@@ -2,9 +2,35 @@
     --background-color: #f3e8ee;
     --secondary-color: #729b79;
     --tint-color: #295135;
+    --error-color: #9d00ff;
+}
+
+body {
+    background-color: var(--background-color);
 }
 
 .custom-highlight:focus {
   outline-color: var(--tint-color);
   border-radius: 0;
+}
+
+.hover-element {
+    border: none;
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+}
+
+.hover-element:hover {
+    background-color: var(--tint-color);
+    color: var(--background-color);
+    transition-duration: 5s;
+}
+
+.hover-element::placeholder {
+    color: var(--tint-color);
+}
+
+.hover-element:hover::placeholder {
+    color: var(--background-color);
+    transition-duration: 5s;
 }

@@ -44,9 +44,9 @@ class EmailVerificationAttempt:
 class EmailManager:
     CODE_LENGTH = 9
     VERIFY_EXPIRY_MINS = 15
-    def __init__(self):
+    def __init__(self, host: str):
         self.verification_attempts: dict[str, EmailVerificationAttempt] = {}
-
+        self.host = host
     def send_email(self, destination: str, subject: str, html: str):
         email = EMAIL_CONFIG.copy()
         email["to"] = destination
@@ -59,8 +59,8 @@ class EmailManager:
         code = self.generate_code()
         attempt = EmailVerificationAttempt(code, get_time() + (EmailManager.VERIFY_EXPIRY_MINS * 60), email)
         self.verification_attempts[email] = attempt
-
-        self.send_email(email, "Verify your email!", EMAIl_VERIFICATION_TEMPLATE.render(code=code,expiry=EmailManager.VERIFY_EXPIRY_MINS))
+        url = "http://" + self.host + "/login-code/?email_code="+code+"&email="+email
+        self.send_email(email, "Verify your email!", EMAIl_VERIFICATION_TEMPLATE.render(code=code,expiry=EmailManager.VERIFY_EXPIRY_MINS, verify_url=url))
 
     def generate_code(self, length=CODE_LENGTH):
         alphabet = string.ascii_uppercase + string.digits

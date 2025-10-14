@@ -83,6 +83,7 @@
     position: relative;
     border: none;
     background-color: var(--secondary-color);
+    color: var(--tint-color);
     top: 15%;
     left: 35%;
     width: 30%;
@@ -92,6 +93,7 @@
 
 .menu-button:hover {
     background-color: var(--tint-color);
+    color: var(--background-color);
 }
 
 .menu-link {

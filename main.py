@@ -15,15 +15,15 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 db.init_app(app)
 
-emailmanager = EmailManager()
+HOST = os.environ.get("SCENERY_DOMAIN")
+if not HOST:
+    HOST = "127.0.0.1:5000"
+
+emailmanager = EmailManager(HOST)
 
 PREMIUM_QUALITIES = [Streamer.TEN_EIGHTY_P]
 
 streamer = Streamer("test/", PREMIUM_QUALITIES)
-
-HOST = os.environ.get("SCENERY_DOMAIN")
-if not HOST:
-    HOST = "127.0.0.1:5000"
 
 SCENERY_PLUS_ID = os.environ.get("SCENERY_PLUS_ID")
 
@@ -52,11 +52,17 @@ def login_start():
         emailmanager.send_code(email)
         return redirect("/login-code/")
 
-@app.route("/login-code/", defaults={"email_code": None}, methods=["POST", "GET"])
-@app.route("/login-code/<email_code>", methods=["POST", "GET"])
-def login_verify(email_code):
+
+@app.route("/login-code/", methods=["POST", "GET"])
+def login_verify():
     if request.method == "GET":
-        return render_template("verify_email.html", email_code=email_code)
+        email_code = None
+        email = None
+        if "email_code" in request.args:
+            email_code = request.args["email_code"]
+        if "email" in request.args:
+            email = request.args["email"]
+        return render_template("verify_email.html", email_code=email_code, email=email)
     if request.method == "POST":
         code = request.form.get("code")
         email = request.form.get("email")
@@ -146,7 +152,18 @@ def create_checkout_api():
                 customer=customer.stripe_id if customer else None,
             )
             return json.dumps({"clientSecret":session.client_secret})
-    return Response("Not authenticated.",status=401)
+    return Response("Not authenticated.", status=401)
+
+@app.route("/reuse-checkout-session", methods=["GET"])
+def reuse_checkout_api():
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        if cookie:
+            if "session" in request.args:
+                session = stripe.checkout.Session.retrieve(request.args["session"])
+                if session["customer_details"]["email"] == cookie.user.email:
+                    return session.client_secret
+    return Response("No matching session.", status=404)
 
 @app.route("/create-portal-session", methods=["POST"])
 def create_portal_api():

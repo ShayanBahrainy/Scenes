@@ -2,19 +2,17 @@
 <html>
     <head>
         <title>Verify your email - Scenery</title>
+        <link href="/static/verify_email.css" rel="stylesheet">
     </head>
     <body>
         {% if error %}
-        <h1>{{error}}</h1>
+        <h1 class="error">Please try again: {{error}}</h1>
         {% endif %}
+        <h1 class="header">Check your email</h1>
         <form method="post">
-            <input type="email" placeholder="Email" name="email" required>
-            {% if not email_code %}
-            <input type="text" placeholder="Verification code" name="code" required>
-            {% else %}
-            <input type="text" placeholder="Verification code" name="code" value="{{email_code}}" required>
-            {% endif %}
-            <button type="submit">Submit</button>
+            <input type="email" placeholder="Email" name="email" required class="email-field custom-highlight hover-element" autocomplete="email" {% if email %} value="{{email}}" {% endif %}>
+            <input type="text" placeholder="Verification code" name="code" required {% if email_code %} value="{{email_code}}" {% endif %} class="code-field custom-highlight hover-element" autocomplete="off">
+            <button type="submit" class="submit-button hover-element">Continue</button>
         </form>
     </body>
 </html>
