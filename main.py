@@ -70,8 +70,9 @@ def login_verify():
             return render_template("verify_email.html", error="Please enter your email!" if not email else "Please enter your verification code!")
         verification = emailmanager.verify(email, code)
         if verification.success:
-            needs_account = db.session.query(Account).filter(Account.email == email).one_or_none() == None
-            if needs_account:
+            account = db.session.query(Account).filter(Account.email == email).one_or_none() == None
+            needs_setup = True if not account else account.name == None
+            if not account:
                 account = Account(email, 'none', get_time())
                 db.session.add(account)
             cookie = Cookie(email)
@@ -79,7 +80,7 @@ def login_verify():
             db.session.add(cookie)
             db.session.commit()
 
-            response = redirect("/account_setup/" if needs_account else "/")
+            response = redirect("/account_setup/" if needs_setup else "/")
             response.set_cookie("auth", cookie.cookie)
             return response
         return render_template("verify_email.html", error=verification.reason)

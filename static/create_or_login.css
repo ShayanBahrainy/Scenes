@@ -56,3 +56,34 @@ body {
     color: var(--background-color);
     transition-duration: 5s;
 }
+
+
+@media (max-width: 700px) {
+    .header {
+        top: 10%;
+        left: 20%;
+        font-size: 1.5em;
+    }
+
+    .form {
+        left: 30%;
+        top: 25%;
+        width: 50%;
+    }
+
+    .email-field {
+        top: 10%;
+        width: 100%;
+        left: 0%;
+        height: 10%;
+        font-size: 1.5em;
+    }
+
+    .submit-button {
+        top: 80%;
+        height: 10%;
+        width: 80%;
+        left: 0%;
+        font-size: 1.5em;
+    }
+}

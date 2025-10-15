@@ -3,12 +3,13 @@
     <head>
         <title>Login or Create an account - Scenery</title>
         <link href="/static/create_or_login.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         {% if error %}
         <h1 class="error">{{error}}</h1>
         {% endif %}
-        <h1 class="header">Create/Login into a Scenery account</h1>
+        <h1 class="header">Get yourself into a Scenery account</h1>
         <form method="post" class="form">
             <input type="email" placeholder="Email" name="email" required class="email-field custom-highlight hover-element">
             <button type="submit" class="submit-button">Submit</button>

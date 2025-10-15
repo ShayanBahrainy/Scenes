@@ -2,11 +2,14 @@
 <html>
     <head>
         <title>Setup your Scenery account!</title>
+        <link href="/static/account_setup.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+        <h1 class="header">Setup your account!</h1>
         <form method="post">
-            <input name="name" placeholder="Name" required>
-            <input type="submit">
+            <input name="name" placeholder="Name" required class="name-input custom-highlight">
+            <button type="submit" class="submit-button">Complete</button>
         </form>
     </body>
 </html>

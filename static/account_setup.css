@@ -1,0 +1,70 @@
+@import url('/static/theme.css');
+
+.header {
+    position: absolute;
+    left: 40%;
+    top: 10%;
+    color: var(--secondary-color);
+    text-decoration: wavy underline overline;
+}
+
+.submit-button {
+    position: absolute;
+    left: 45%;
+    top: 40%;
+    width: 10%;
+    height: 5%;
+    background-color: var(--tint-color);
+    color: var(--secondary-color);
+    border: none;
+    animation: letsgo 3s alternate infinite;
+}
+
+@keyframes letsgo {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(150%);
+    }
+}
+
+@keyframes letsgomobile {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        transform: translateY(-100%);
+    }
+}
+
+.name-input {
+    position: absolute;
+    left: 40%;
+    top: 30%;
+    width: 20%;
+    height: 5%;
+    border: 2px solid var(--tint-color);
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+}
+
+@media (max-width: 700px) {
+    .header {
+        left: 15%;
+        font-size: 1.9em;
+    }
+    .submit-button {
+        top: 60%;
+        width: 50%;
+        left: 25%;
+        font-size: 1.5em;
+        animation: letsgomobile 1.5s alternate infinite;
+    }
+    .name-input {
+        top: 30%;
+        width: 45%;
+        left: 25%;
+        font-size: 1.5em;
+    }
+}

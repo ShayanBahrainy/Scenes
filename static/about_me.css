@@ -3,6 +3,7 @@
 body {
     background-color: var(--background-color);
 }
+
 .main-content {
     position: fixed;
     top: 30%;
@@ -13,9 +14,25 @@ body {
     font-size: 1.5em;
     color: var(--secondary-color);
 }
+
 .header {
     color: var(--secondary-color);
     position: fixed;
     top: 20%;
     left: 45%;
+}
+
+@media (max-width: 700px) {
+    .main-content {
+        font-size: 1.5em;
+        top: 25%;
+        height: 70%;
+        top: 20%;
+    }
+
+    .header {
+        font-size: 1.5em;
+        left: 35%;
+        top: 10%;
+    }
 }

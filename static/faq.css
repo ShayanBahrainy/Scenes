@@ -27,3 +27,18 @@
 body {
     background-color: var(--background-color);
 }
+
+@media (max-width: 700px) {
+    .faq {
+        font-size: 1.5em;
+        top: 25%;
+        height: 70%;
+        top: 20%;
+    }
+
+    .header {
+        font-size: 1.25em;
+        left: 20%;
+        top: 10%;
+    }
+}
