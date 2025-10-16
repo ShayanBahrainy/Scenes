@@ -6,7 +6,7 @@ body {
 
 .form {
     position: absolute;
-    left: 45%;
+    left: 25%;
     top: 40%;
     width: 30%;
     height: 60%;
@@ -14,40 +14,48 @@ body {
 
 .header {
     position: absolute;
-    left: 35%;
-    top: 20%;
+    left: 25%;
+    top: 5%;
+    font-size: 6vw;
     color: var(--secondary-color);
 }
 
 .email-field {
     position: absolute;
     border-radius: 0;
-    left: -12.5%;
-    height: 5%;
+    left: 50%;
+    height: 10%;
     width: 75%;
     box-shadow: outset 5px 5px 10px #5a7a5e,
                 outset -5px -5px 10px #89b18a;
+    font-size: 2em;
+    transition-duration: 5s;
+    color: var(--tint-color);
+
 }
 
-.email-field::placeholder {
-    color: var(--tint-color);
-}
 .email-field:hover::placeholder {
     color: var(--background-color);
-    transition-duration: 5s;
 }
+
 
 .submit-button {
     position: absolute;
     top: 20%;
+    left: 60%;
     border: none;
     background-color: var(--secondary-color);
     color: var(--tint-color);
     width: 50%;
-    height: 5%;
+    height: 10%;
+    font-size: 2em;
     border-radius: 2.5%;
     box-shadow: outset 5px 5px 10px #5a7a5e,
                 outset -5px -5px 10px #89b18a;
+}
+
+.whats-up {
+    visibility: collapse;
 }
 
 
@@ -58,17 +66,31 @@ body {
 }
 
 
+@keyframes float {
+    0% {
+        transform: translateY(0%);
+
+    }
+    50% {
+        transform: translateY(-10%);
+    }
+    100% {
+        transform: translateY(0%);
+    }
+}
+
 @media (max-width: 700px) {
     .header {
         top: 10%;
-        left: 20%;
-        font-size: 1.5em;
+        left: 25%;
+        font-size: 1.75em;
     }
 
     .form {
-        left: 30%;
+        left: 25%;
         top: 25%;
         width: 50%;
+        height: 75%;
     }
 
     .email-field {
@@ -77,13 +99,26 @@ body {
         left: 0%;
         height: 10%;
         font-size: 1.5em;
+        border-radius: 0.5%;
+        animation: float 2s ease-in-out infinite;
     }
 
     .submit-button {
-        top: 80%;
+        top: 50%;
         height: 10%;
-        width: 80%;
+        width: 70%;
+        left: 15%;
+        font-size: 1em;
+    }
+
+    .whats-up {
+        visibility: visible;
+        font-size: 1.25em;
+        position: absolute;
+        top: 90%;
         left: 0%;
-        font-size: 1.5em;
+        width: 100%;
+        color: var(--tint-color);
+        text-align: center;
     }
 }

@@ -138,6 +138,19 @@
     width: 20%;
 }
 
+@keyframes button-glow {
+    0% {
+        box-shadow: 0px 0px 20px var(--secondary-color);
+        color: var(--secondary-color);
+        background-color: var(--tint-color);
+    }
+    50% {
+        box-shadow: 0px 0px 50px var(--tint-color);
+        background-color: var(--secondary-color);
+        color: var(--tint-color);
+    }
+}
+
 
 @media (max-width: 700px) {
     .vjs-big-play-button{
@@ -170,6 +183,28 @@
     .menu-closed {
         transform: translateY(-100%);
         transition-duration: 3s;
+    }
+
+    .menu-button {
+        top: 25%;
+        width: 30%;
+        height: 10%;
+        z-index: 0;
+    }
+
+    .menu-button {
+        animation: button-glow 2s infinite;
+        color: var(--secondary-color);
+        background-color: var(--tint-color);
+    }
+
+    .welcome-message
+    {
+        top: 5%;
+        left: 10%;
+        width: 80%;
+        font-size: 1.5em;
+        text-align: center;
     }
 
 

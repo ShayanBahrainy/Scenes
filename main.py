@@ -70,7 +70,7 @@ def login_verify():
             return render_template("verify_email.html", error="Please enter your email!" if not email else "Please enter your verification code!")
         verification = emailmanager.verify(email, code)
         if verification.success:
-            account = db.session.query(Account).filter(Account.email == email).one_or_none() == None
+            account = db.session.query(Account).filter(Account.email == email).one_or_none()
             needs_setup = True if not account else account.name == None
             if not account:
                 account = Account(email, 'none', get_time())

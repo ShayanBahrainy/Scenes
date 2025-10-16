@@ -1,4 +1,4 @@
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', function() {
     const retry = this.document.querySelector('.retry-button')
 
     if (retry) {

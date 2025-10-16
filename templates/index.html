@@ -12,7 +12,7 @@
         {% endif %}
         <button class="hamburger closed-hamburger">☰</button>
         <div class="menu menu-closed">
-            <p class="welcome-message">Hi{{" "+user.name if user and user.name else ""}}!</p>
+            <p class="welcome-message">{{"Hi "+user.name if user and user.name else "Welcome"}}!</p>
             {% if user %}
                 <select class="logout-menu custom-highlight">
                     <option value="" selected disabled>Logout</option>
