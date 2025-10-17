@@ -1,0 +1,41 @@
+@import url('/static/theme.css');
+
+.not-subscribed {
+    background-color: var(--tint-color);
+    position: absolute;
+    left: 30%;
+    bottom: 5%;
+    width: 10%;
+    height: 90%;
+    transition: height 0.5s;
+}
+
+.subscribed {
+    background-color: var(--secondary-color);
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    height: 80%;
+    width: 10%;
+    transition: height 0.5s;
+}
+
+.not-subscribed-label {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: rotateZ(-90deg);
+    z-index: 1;
+    height: 2%;
+    color: var(--background-color);
+}
+
+.subscribed-label {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: rotateZ(-90deg);
+    z-index: 1;
+    height: 2%;
+    color: var(--background-color);
+}

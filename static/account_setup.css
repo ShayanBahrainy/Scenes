@@ -17,7 +17,7 @@
     background-color: var(--tint-color);
     color: var(--secondary-color);
     border: none;
-    animation: letsgo 3s alternate infinite;
+    animation: letsgo 2s alternate infinite;
 }
 
 @keyframes letsgo {

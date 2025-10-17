@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Administrator Dashboard - Scenery</title>
+        <link href="/static/admin_dashboard.css" rel="stylesheet">
+        <script src="/static/admin_dashboard.js"></script>
+    </head>
+    <body>
+        <p>There are {{num_accounts}} accounts, {{(num_subscribers/num_accounts) * 100}}% of them are subscribed. There are {{num_subscribers}} subscribers. </p>
+        <div class="bar">
+            <div class="not-subscribed" data-value="{{num_accounts-num_subscribers}}">
+                <p class="not-subscribed-label">{{num_accounts-num_subscribers}} free-tier users!</p>
+            </div>
+            <div class="subscribed" data-value="{{num_subscribers}}">
+                <p class="subscribed-label">{{num_accounts-num_subscribers}} subscribers!</p>
+            </div>
+        </div>
+    </body>
+</html>

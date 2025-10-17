@@ -27,6 +27,8 @@ streamer = Streamer("test/", PREMIUM_QUALITIES)
 
 SCENERY_PLUS_ID = os.environ.get("SCENERY_PLUS_ID")
 
+ADMIN_EMAIL = os.environ.get("SCENERY_ADMIN_EMAIL")
+
 STRIPE_ENDPOINT_SECRET = os.environ.get("STRIPE_ENDPOINT_SECRET")
 if not STRIPE_ENDPOINT_SECRET:
     STRIPE_ENDPOINT_SECRET = "whsec_5573f2cd2f99db84972c5971d7ad9afa3493d90610d026784ee3df5381b571c8"
@@ -111,6 +113,7 @@ def account_setup():
             return render_template("account_setup.html", error="Please include your name!")
         cookie.user.name = name
         db.session.commit()
+
         return index(message="Account setup complete!")
 
 @app.route("/logout/")
@@ -314,8 +317,29 @@ def about_me():
 def faq_route():
     return render_template("faq.html")
 
+@app.route("/admin/dashboard/")
+def admin_dashboard():
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        if cookie:
+            if cookie.email == ADMIN_EMAIL:
+                num_accounts = db.session.query(Account).count()
+                num_subscribers = db.session.query(Account).filter(Account.subscription_status == 'plus').count()
+                num_accounts = 50
+                num_subscribers = 25
+                return render_template("admin_dashboard.html", num_accounts=num_accounts, num_subscribers=num_subscribers)
+    return abort(404)
+
+@app.errorhandler(404)
+def handle_404_error(e):
+    # Return a JSON response with a custom message
+    return jsonify({
+    "error": "Page not found",
+    "message": "The resource you are looking for does not exist."
+    }), 404
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     streamer.start()
-    app.run("0.0.0.0", debug=True)
+    app.run("0.0.0.0")
