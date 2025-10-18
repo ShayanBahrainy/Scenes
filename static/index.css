@@ -152,7 +152,7 @@
 }
 
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .vjs-big-play-button{
         width: 30%;
         font-size: 6em !important;

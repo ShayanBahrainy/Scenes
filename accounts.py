@@ -1,5 +1,6 @@
 import psycopg2
 from flask_sqlalchemy import *
+from flask import Request
 import secrets
 import string
 from models import db
@@ -37,3 +38,14 @@ class Cookie(db.Model):
         for i in range(length):
             cookie += secrets.choice(options)
         return cookie
+
+def admin_auth(request: Request, ADMIN_EMAIL: str):
+    "Returns True if the request is authenticated as the admin."
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        if cookie:
+            if cookie.user.email == ADMIN_EMAIL:
+                return True
+    return False
+
+

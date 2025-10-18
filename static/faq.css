@@ -28,7 +28,7 @@ body {
     background-color: var(--background-color);
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .faq {
         font-size: 1.5em;
         top: 25%;

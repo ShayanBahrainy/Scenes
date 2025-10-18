@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Upload a video - Scenery</title>
+        <link href="/static/admin_upload.css" rel="stylesheet">
+        <script src="/static/admin_upload.js"></script>
+    </head>
+    <body>
+        <h1 class="header">Upload a video</h1>
+        <form method="post" class="upload-form" enctype="multipart/form-data">
+            <button type="button" class="file-upload-visual">Upload a file</button>
+            <input type="file" required placeholder="Video file" accept="video/*" class="file-upload-real" name="video">
+            <button type="submit" class="continue-button hover-element">Continue</button>
+        </form>
+    </body>
+</html>

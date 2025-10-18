@@ -4,16 +4,32 @@
         <title>Administrator Dashboard - Scenery</title>
         <link href="/static/admin_dashboard.css" rel="stylesheet">
         <script src="/static/admin_dashboard.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <p>There are {{num_accounts}} accounts, {{(num_subscribers/num_accounts) * 100}}% of them are subscribed. There are {{num_subscribers}} subscribers. </p>
         <div class="bar">
             <div class="not-subscribed" data-value="{{num_accounts-num_subscribers}}">
-                <p class="not-subscribed-label">{{num_accounts-num_subscribers}} free-tier users!</p>
+                <p class="not-subscribed-label">{{num_accounts-num_subscribers}} free-tier user{{'' if num_accounts-num_subscribers == 1 else 's'}}!</p>
             </div>
             <div class="subscribed" data-value="{{num_subscribers}}">
-                <p class="subscribed-label">{{num_accounts-num_subscribers}} subscribers!</p>
+                <p class="subscribed-label">{{num_subscribers}} subscriber{{'' if num_subscribers == 1 else 's'}}!</p>
             </div>
+        </div>
+        <div class="data-section">
+            <h1 class="accounts-label">Accounts</h1>
+            <p>{{num_accounts}}</p>
+            <h1 class="percentage-label">% Subscribed</h1>
+            <p>{{((num_subscribers/num_accounts) * 100) | round(2)}}</p>
+            <h1 class="subscribers-label">Subscribed</h1>
+            <p>{{num_subscribers}}</p>
+            <h1 class="monthly-rev">Monthly Revenue</h1>
+            <p>{{(num_subscribers * plus_price)/100 | round(2)}}</p>
+            <h1 class="annual-rev">Projected Annual Revenue</h1>
+            <p>{{(num_subscribers * plus_price * 12)/100 | round(2)}}</p>
+        </div>
+        <div class="action-section">
+            <h1>Actions</h1>
+            <button class="upload-button hover-element">Upload</button>
         </div>
     </body>
 </html>

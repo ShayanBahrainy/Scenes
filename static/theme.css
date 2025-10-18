@@ -3,6 +3,7 @@
     --secondary-color: #729b79;
     --tint-color: #295135;
     --error-color: #9d00ff;
+    --mobile-scrreen-width: 900px;
 }
 
 body {

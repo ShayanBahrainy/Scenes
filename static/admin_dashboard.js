@@ -5,12 +5,17 @@ window.addEventListener("DOMContentLoaded", function () {
     let val1 = bar1.getAttribute("data-value")
     let val2 = bar2.getAttribute("data-value")
 
-    if (val2 > val1) {
+    if (val1 < val2) {
         bar1.classList.toggle("switch-right")
         bar2.classList.toggle("switch-left")
     }
+
     if (val1 == val2) {
-        bar1.classList.toggle("equalize")
-        bar2.classList.toggle("equalize")
+        bar1.classList.toggle("equalize-bar")
+        bar2.classList.toggle("equalize-bar")
     }
+
+    this.document.querySelector(".upload-button").addEventListener("click", function() {
+        window.location.href = "/admin/upload"
+    })
 })

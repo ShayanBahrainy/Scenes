@@ -79,7 +79,7 @@ body {
     }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .header {
         top: 10%;
         left: 25%;

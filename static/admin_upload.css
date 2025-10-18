@@ -1,0 +1,51 @@
+@import url('/static/theme.css');
+
+.file-upload-real {
+    display: none;
+}
+
+.header {
+    position: absolute;
+    left: 40%;
+    top: 10%;
+    font-size: 3em;
+    color: var(--secondary-color);
+}
+
+.upload-form {
+    position: absolute;
+    top: 30%;
+    left: 25%;
+    width: 50%;
+    height: 70%;
+}
+
+.file-upload-visual {
+    position: absolute;
+    top: 20%;
+    left: 25%;
+    width: 50%;
+    height: 20%;
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+    font-size: 1.5em;
+    border: none;
+}
+
+.file-upload-visual:hover {
+    animation: jump 0.5s alternate 2;
+}
+
+@keyframes jump {
+    from { transform: translateY(0%); }
+    to { transform: translateY(-20%); }
+}
+
+.continue-button {
+    position: absolute;
+    top: 60%;
+    left: 40%;
+    width: 20%;
+    height: 10%;
+    font-size: 1.5em;
+}

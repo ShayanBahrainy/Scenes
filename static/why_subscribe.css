@@ -40,7 +40,7 @@
     transform: translateX(-25%);
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .header {
         left: 20%;
         font-size: 2em;

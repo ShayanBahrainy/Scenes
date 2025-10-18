@@ -1,8 +1,9 @@
 from flask import *
 from werkzeug.security import safe_join
+from werkzeug.utils import secure_filename
 from utils import get_time
 from mail import EmailManager
-from accounts import Account, Cookie
+from accounts import Account, Cookie, admin_auth
 from payments import PaymentAccount, Payment
 from streamer import Streamer
 from models import db
@@ -12,6 +13,7 @@ import os
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://scenery:Scenery@localhost:5432/scenery'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['UPLOAD_FOLDER'] = 'drafts/'
 
 db.init_app(app)
 
@@ -32,8 +34,6 @@ ADMIN_EMAIL = os.environ.get("SCENERY_ADMIN_EMAIL")
 STRIPE_ENDPOINT_SECRET = os.environ.get("STRIPE_ENDPOINT_SECRET")
 if not STRIPE_ENDPOINT_SECRET:
     STRIPE_ENDPOINT_SECRET = "whsec_5573f2cd2f99db84972c5971d7ad9afa3493d90610d026784ee3df5381b571c8"
-
-
 
 @app.route("/")
 def index(message=None):
@@ -319,20 +319,37 @@ def faq_route():
 
 @app.route("/admin/dashboard/")
 def admin_dashboard():
-    if "auth" in request.cookies:
-        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
-        if cookie:
-            if cookie.email == ADMIN_EMAIL:
-                num_accounts = db.session.query(Account).count()
-                num_subscribers = db.session.query(Account).filter(Account.subscription_status == 'plus').count()
-                num_accounts = 50
-                num_subscribers = 25
-                return render_template("admin_dashboard.html", num_accounts=num_accounts, num_subscribers=num_subscribers)
-    return abort(404)
+    if admin_auth(request, ADMIN_EMAIL):
+        num_accounts = db.session.query(Account).count()
+        num_subscribers = db.session.query(Account).filter(Account.subscription_status == 'plus').count()
+        #num_accounts = 50
+        #num_subscribers = 25
+        plus_price = stripe.Price.retrieve(SCENERY_PLUS_ID)["unit_amount"]
+        return render_template("admin_dashboard.html", num_accounts=num_accounts, num_subscribers=num_subscribers, plus_price=plus_price)
+    return abort(401)
+
+@app.route("/admin/upload/", methods=["GET", "POST"])
+def admin_upload():
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+    if request.method == "GET":
+        return render_template("admin_upload.html")
+    if request.method == "POST":
+        file = request.files["video"]
+        if not file.mimetype.startswith("video/"):
+            return abort(400)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
+        return make_response("Draft created", status=201)
+
+@app.route("/admin/videos/", methods=["GET", "PUT", "DELETE"])
+def admin_viewall():
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+    if request.method == "GET":
+        return render_template("admin_viewall.html")
 
 @app.errorhandler(404)
 def handle_404_error(e):
-    # Return a JSON response with a custom message
     return jsonify({
     "error": "Page not found",
     "message": "The resource you are looking for does not exist."

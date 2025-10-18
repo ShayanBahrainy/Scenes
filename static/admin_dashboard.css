@@ -1,7 +1,7 @@
 @import url('/static/theme.css');
 
 .not-subscribed {
-    background-color: var(--tint-color);
+    background-color: var(--secondary-color);
     position: absolute;
     left: 30%;
     bottom: 5%;
@@ -11,7 +11,7 @@
 }
 
 .subscribed {
-    background-color: var(--secondary-color);
+    background-color: var(--tint-color);
     position: absolute;
     left: 50%;
     bottom: 5%;
@@ -38,4 +38,77 @@
     z-index: 1;
     height: 2%;
     color: var(--background-color);
+}
+
+.equalize-bar {
+    animation: equalize 3s forwards;
+}
+
+.switch-right {
+    animation: switch-right 3s forwards;
+}
+
+.switch-left {
+    animation: switch-left 3s forwards;
+}
+
+
+.data-section {
+    position: absolute;
+    top: 10%;
+    left: 70%;
+    color: var(--tint-color);
+}
+
+.action-section {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    color: var(--tint-color);
+}
+
+.upload-button {
+    position: absolute;
+    width: 75%;
+    left: 12.5%;
+}
+
+@keyframes switch-right {
+    from { transform: translateX(0%); height: 90%;}
+    to { transform: translateX(200%); height: 80%;}
+}
+
+@keyframes switch-left {
+    from { transform: translateX(0%); height: 80%;}
+    to { transform: translateX(-200%); height: 90%;}
+}
+
+@keyframes equalize {
+    from { }
+    to { height: 85%; }
+}
+
+@media (max-width: 900px) {
+    .subscribed, .not-subscribed {
+        display: none;
+    }
+
+    .data-section {
+        left: 30%;
+    }
+
+    .data-section p, .data-section h1 {
+        font-size: 1em;
+    }
+
+    .action-section {
+        left: 30%;
+        top: 80%;
+    }
+
+    .action-section button {
+        width: 50%;
+        left: 25%;
+    }
+
 }
