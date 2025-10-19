@@ -8,7 +8,7 @@ from payments import PaymentAccount, Payment
 from streamer import Streamer
 from models import db
 from stripe_config import stripe
-from video_processor import VideoProcessor, Draft
+from video_processor import VideoProcessor, Video
 import os
 
 app = Flask(__name__)
@@ -26,7 +26,11 @@ emailmanager = EmailManager(HOST)
 
 PREMIUM_QUALITIES = [Streamer.TEN_EIGHTY_P]
 
-streamer = Streamer("test/", PREMIUM_QUALITIES)
+
+VIDEO_FOLDER = "videos/"
+DRAFT_FOLDER = "drafts/"
+
+streamer = Streamer(VIDEO_FOLDER, PREMIUM_QUALITIES)
 
 SCENERY_PLUS_ID = os.environ.get("SCENERY_PLUS_ID")
 
@@ -290,7 +294,7 @@ def get_playlist(quality):
 
     return streamer.get_media_playlist(quality)
 
-@app.route("/test/<video_name>/<quality>/<file_name>.ts")
+@app.route("/videos/<video_name>/<quality>/<file_name>.ts")
 def return_video_file(video_name, quality, file_name):
     if quality in PREMIUM_QUALITIES:
         if "auth" not in request.cookies:
@@ -304,7 +308,7 @@ def return_video_file(video_name, quality, file_name):
             return make_response("Not authorized", 403)
 
     path = safe_join(safe_join(video_name, quality), file_name+".ts")
-    return send_from_directory('test/', path)
+    return send_from_directory(VIDEO_FOLDER, path)
 
 @app.route("/about-me")
 def about_me():
@@ -345,30 +349,86 @@ def admin_upload():
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(path)
         vid_name = filename.split('.')[0]
-        processor = VideoProcessor(video_path=path, video_folder="uploaded/"+vid_name, move_path='drafts/'+vid_name)
+        processor = VideoProcessor(video_path=path, video_folder="uploaded/"+vid_name, move_path=os.path.join(DRAFT_FOLDER,vid_name))
         processor.start()
         return Response("Video processing", status=201)
 
 @app.route("/admin/drafts/", methods=["GET", "PUT", "DELETE"])
-def admin_viewall():
+def admin_view_drafts():
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
     if request.method == "GET":
         video_drafts = []
         for video in os.listdir('drafts/'):
-            draft = Draft('/drafts' + video + '/master.m3u8', video)
+            draft = Video('/drafts' + video + '/master.m3u8', video)
             video_drafts.append(draft)
         return render_template("admin_drafts.html", video_drafts=video_drafts)
     if request.method == "PUT":
         if "video_name" not in request.args:
             return abort(400)
-        pass
+        try:
+            os.rename(os.path.join(DRAFT_FOLDER, request.args["video_name"]), os.path.join(VIDEO_FOLDER, request.args["video_name"]))
+        except:
+            return abort(400)
+        return "Draft published"
+    if request.method == "DELETE":
+        if "video_name" not in request.args:
+            return abort(400)
+        try:
+            os.remove(safe_join(DRAFT_FOLDER, request.args["video_name"]))
+        except:
+            return abort(400)
+        return "Draft deleted"
 
-@app.route("/drafts/<video_name>/master.m3u8")
-def draft_master(video_name):
+@app.route("/admin/published/", methods=["GET", "PUT"])
+def admin_view_published():
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
-    return Response(VideoProcessor.DRAFT_MASTER_TEMPLATE.format(video_folder_path="/drafts/"+video_name), mimetype="text/plain")
+    if request.method == "GET":
+        VIDEOS_PER_PAGE = 10
+        videos = []
+        for folder in os.listdir(VIDEO_FOLDER):
+            video = Video(os.path.join("/" + VIDEO_FOLDER, f"{folder}/master.m3u8"), video_name=folder)
+            videos.append(video)
+        page = request.args.get("page")
+        if page:
+            try:
+                page = int(page)
+            except:
+                return abort(400)
+        else:
+            page = 0
+            
+        page_count = (len(videos) + VIDEOS_PER_PAGE) // VIDEOS_PER_PAGE
+        start = page * VIDEOS_PER_PAGE
+        end = start + VIDEOS_PER_PAGE
+        videos = videos[start:end]
+
+        return render_template("admin_videos.html", videos=videos, page=page, page_count=page_count)
+
+    if request.method == "PUT":
+        if "video_name" not in request.args:
+            return abort(400)
+        try:
+            os.rename(safe_join(VIDEO_FOLDER, request.args["video_name"]), safe_join(DRAFT_FOLDER, request.args["video_name"]))
+        except:
+            return abort(400)
+        return "Video reverted to draft"
+
+@app.route("/videos/<video_name>/<quality>/<filename>.m3u8")
+def admin_return_playlist(video_name, quality, filename):
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+    playlist_path = safe_join(safe_join(safe_join("videos/", video_name), quality), filename+".m3u8")
+    with open(playlist_path) as f:
+        playlist = f.read()
+    return Streamer.__add_basepath__(playlist, f"/videos/{video_name}/{quality}/")
+
+@app.route("/<type>/<video_name>/master.m3u8")
+def type_master(type, video_name):
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+    return Response(VideoProcessor.DRAFT_MASTER_TEMPLATE.format(video_folder_path=f"/{type}/"+video_name), mimetype="text/plain")
 
 @app.route("/drafts/<video_name>/<quality>/<filename>", methods=["GET"])
 def serve_draft(video_name, quality, filename):

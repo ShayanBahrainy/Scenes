@@ -14,7 +14,7 @@ ffmpeg -i "{video_path}" -v error -profile:v high10 -level 3.0 -vf "scale=1920:-
 path = "/home/shayanbahrainy/Videos/Nature vids/final"
 dest_path = "/home/shayanbahrainy/Videos/Nature vids/converted"
 
-class Draft:
+class Video:
     def __init__(self, src: str, video_name: str):
         self.src = src
         self.video_name = video_name

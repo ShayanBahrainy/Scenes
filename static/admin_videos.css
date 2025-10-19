@@ -1,0 +1,52 @@
+@import url('/static/theme.css');
+
+.videos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2em;
+    position: absolute;
+    height: 90%;
+    width: 99%;
+}
+
+.video-label {
+    color: var(--secondary-color);
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.video {
+    position: relative;
+}
+
+.revert-button {
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+    border: none;
+    position: relative;
+    width: 20%;
+    left: 40%;
+}
+
+.page-link {
+    color: var(--tint-color);
+    font-size: 1em;
+}
+
+.pages {
+    position: absolute;
+    left: 35%;
+    width: 50%;
+    top: 95%;
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.revert-button:hover {
+    background-color: var(--tint-color);
+    color: var(--background-color);
+    cursor: pointer;
+}

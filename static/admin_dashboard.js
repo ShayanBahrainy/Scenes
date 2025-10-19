@@ -18,4 +18,12 @@ window.addEventListener("DOMContentLoaded", function () {
     this.document.querySelector(".upload-button").addEventListener("click", function() {
         window.location.href = "/admin/upload"
     })
+
+    this.document.querySelector(".drafts-button").addEventListener("click", function() {
+        window.location.href = "/admin/drafts"
+    })
+
+    this.document.querySelector(".published-button").addEventListener("click", function() {
+        window.location.href = "/admin/published"
+    })
 })

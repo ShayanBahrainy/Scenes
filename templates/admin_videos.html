@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>View published videos - Scenery</title>
+        <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
+        <link href="/static/admin_videos.css" rel="stylesheet">
+        <script src="/static/admin_videos.js"></script>
+    </head>
+    <body>
+        <div class="videos">
+            {% for video in videos %}
+            <div class="video-container">
+                <video id="my-video" class="video-js video-player" controls preload="auto" width="320" height="132" data-setup="{}">
+                <source src="{{video.src}}" type="application/x-mpegurl">
+                <p class="vjs-no-js">
+                To view this video please enable JavaScript, and consider upgrading to a
+                web browser that
+                <a href="https://videojs.com/html5-video-support/" target="_blank"
+                    >supports HTML5 video</a
+                >
+                </p>
+            </video>
+            <p class="video-label">{{video.video_name}}</p> <button class="revert-button" data-video-name="{{video.video_name}}">Revert to draft</button>
+            </div>
+            {% endfor %}
+        </div>
+        <script src="https://vjs.zencdn.net/8.23.4/video.min.js"></script>
+        <div class="pages">
+            {% for i in range(1, page_count + 1) %}
+            <p data-page="{{i-1}}" class="page-link">Page {{i}}</p>
+            {% endfor %}
+        </div>
+    </body>
+</html>
