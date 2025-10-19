@@ -8,12 +8,13 @@ from payments import PaymentAccount, Payment
 from streamer import Streamer
 from models import db
 from stripe_config import stripe
+from video_processor import VideoProcessor, Draft
 import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://scenery:Scenery@localhost:5432/scenery'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['UPLOAD_FOLDER'] = 'drafts/'
+app.config['UPLOAD_FOLDER'] = 'uploaded/'
 
 db.init_app(app)
 
@@ -338,15 +339,43 @@ def admin_upload():
         file = request.files["video"]
         if not file.mimetype.startswith("video/"):
             return abort(400)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-        return make_response("Draft created", status=201)
+        if '.' not in file.filename:
+            return abort(400)
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
+        vid_name = filename.split('.')[0]
+        processor = VideoProcessor(video_path=path, video_folder="uploaded/"+vid_name, move_path='drafts/'+vid_name)
+        processor.start()
+        return Response("Video processing", status=201)
 
-@app.route("/admin/videos/", methods=["GET", "PUT", "DELETE"])
+@app.route("/admin/drafts/", methods=["GET", "PUT", "DELETE"])
 def admin_viewall():
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
     if request.method == "GET":
-        return render_template("admin_viewall.html")
+        video_drafts = []
+        for video in os.listdir('drafts/'):
+            draft = Draft('/drafts' + video + '/master.m3u8', video)
+            video_drafts.append(draft)
+        return render_template("admin_drafts.html", video_drafts=video_drafts)
+    if request.method == "PUT":
+        if "video_name" not in request.args:
+            return abort(400)
+        pass
+
+@app.route("/drafts/<video_name>/master.m3u8")
+def draft_master(video_name):
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+    return Response(VideoProcessor.DRAFT_MASTER_TEMPLATE.format(video_folder_path="/drafts/"+video_name), mimetype="text/plain")
+
+@app.route("/drafts/<video_name>/<quality>/<filename>", methods=["GET"])
+def serve_draft(video_name, quality, filename):
+    if admin_auth(request, ADMIN_EMAIL):
+        path = safe_join(safe_join(safe_join("drafts/", video_name), quality), filename)
+        return send_file(path)
+    return abort(401)
 
 @app.errorhandler(404)
 def handle_404_error(e):
