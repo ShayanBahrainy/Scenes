@@ -1,0 +1,19 @@
+@import url('/static/theme.css');
+
+pre {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    font-size: 2em;
+}
+
+
+@media (max-width: 900px) {
+    pre {
+        top: 50%;
+        left: 0%;
+        width: 100%;
+        text-align: center;
+        font-size: 1em;
+    }
+}
