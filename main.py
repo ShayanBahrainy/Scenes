@@ -1,6 +1,7 @@
 from flask import *
 from werkzeug.security import safe_join
 from werkzeug.utils import secure_filename
+import user_agents
 from utils import get_time
 from mail import EmailManager
 from accounts import Account, Cookie, admin_auth
@@ -357,12 +358,14 @@ def admin_upload():
 def admin_view_drafts():
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
+    user_agent = request.headers.get("User-Agent")
+    parsed_useragent = user_agents.parse(user_agent)
     if request.method == "GET":
         video_drafts = []
         for video in os.listdir('drafts/'):
-            draft = Video('/drafts' + video + '/master.m3u8', video)
+            draft = Video('/drafts/' + video + '/master.m3u8', video)
             video_drafts.append(draft)
-        return render_template("admin_drafts.html", video_drafts=video_drafts)
+        return render_template("admin_drafts.html", drafts=video_drafts, is_mobile=parsed_useragent.is_mobile)
     if request.method == "PUT":
         if "video_name" not in request.args:
             return abort(400)
@@ -381,9 +384,11 @@ def admin_view_drafts():
         return "Draft deleted"
 
 @app.route("/admin/published/", methods=["GET", "PUT"])
-def admin_view_published():
+def admin_published():
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
+    user_agent = request.headers.get('User-Agent')
+    parsed_useragent = user_agents.parse(user_agent)
     if request.method == "GET":
         VIDEOS_PER_PAGE = 10
         videos = []
@@ -398,13 +403,15 @@ def admin_view_published():
                 return abort(400)
         else:
             page = 0
-            
-        page_count = (len(videos) + VIDEOS_PER_PAGE) // VIDEOS_PER_PAGE
-        start = page * VIDEOS_PER_PAGE
-        end = start + VIDEOS_PER_PAGE
+        vid_per_page = VIDEOS_PER_PAGE
+        if parsed_useragent.is_mobile:
+            vid_per_page = 3
+        page_count = (len(videos) + vid_per_page) // vid_per_page
+        start = page * vid_per_page
+        end = start + vid_per_page
         videos = videos[start:end]
 
-        return render_template("admin_videos.html", videos=videos, page=page, page_count=page_count)
+        return render_template("admin_videos.html", videos=videos, page=page, page_count=page_count, is_mobile=parsed_useragent.is_mobile)
 
     if request.method == "PUT":
         if "video_name" not in request.args:
@@ -438,11 +445,8 @@ def serve_draft(video_name, quality, filename):
     return abort(401)
 
 @app.errorhandler(404)
-def handle_404_error(e):
-    return jsonify({
-    "error": "Page not found",
-    "message": "The resource you are looking for does not exist."
-    }), 404
+def error_404(e):
+    return render_template("404.html")
 
 if __name__ == "__main__":
     with app.app_context():

@@ -5,16 +5,21 @@
         <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
         <link href="/static/admin_drafts.css" rel="stylesheet">
         <script src="/static/admin_drafts.js"></script>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     </head>
     <body>
+        <button class="back-button">Home</button>
+        <div class="videos">
         {% for draft in drafts %}
+        <div class="video">
             <video
             id="my-video"
             class="video-js video-player"
             controls
             preload="auto"
-            width="640"
-            height="264"
+            width="320"
+            height="132"
             data-setup="{}"
         >
             <source src="{{draft.src}}" type="application/x-mpegurl">
@@ -26,9 +31,12 @@
             >
             </p>
         </video>
+        <p class="video-label">{{draft.video_name}}</p>
         <button class="delete-button" data-video-name="{{draft.video_name}}">Delete</button>
         <button class="publish-button" data-video-name="{{draft.video_name}}">Publish</button>
+        </div>
         {% endfor %}
+        </div>
         <script src="https://vjs.zencdn.net/8.23.4/video.min.js"></script>
     </body>
 </html>

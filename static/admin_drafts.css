@@ -1,0 +1,67 @@
+@import url('/static/theme.css');
+
+.videos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2em;
+    position: absolute;
+    height: 90%;
+    width: 99%;
+}
+
+.video-label {
+    color: var(--secondary-color);
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.video {
+    position: relative;
+}
+
+.delete-button {
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+    border: none;
+    position: relative;
+    width: 20%;
+    left: 55%;
+}
+
+.publish-button {
+    background-color: var(--secondary-color);
+    color: var(--tint-color);
+    border: none;
+    position: relative;
+    width: 20%;
+    left: 10%;
+}
+
+.back-button {
+    background-color: transparent;
+    color: var(--tint-color);
+    border: none;
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    width: 5%;
+    font-size: 1.5em;
+    z-index: 1;
+}
+
+@media (max-width: 900px) {
+    .delete-button, .publish-button {
+        font-size: 1.5em;
+        width: 30%;
+    }
+    .publish-button {
+        left: -20%;
+    }
+    .back-button {
+        position: absolute;
+        top: 90%;
+        left: 40%;
+    }
+}

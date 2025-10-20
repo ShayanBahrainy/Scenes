@@ -37,8 +37,10 @@
 }
 
 @keyframes jump {
-    from { transform: translateY(0%); }
-    to { transform: translateY(-20%); }
+    0% { transform: translateY(0%); }
+    20% { transform: translateY(-20%); }
+    40% { transform: translateY(0%); }
+    100% { transform: translateY(0%); }
 }
 
 .continue-button {
@@ -48,4 +50,24 @@
     width: 20%;
     height: 10%;
     font-size: 1.5em;
+}
+
+
+@media (max-width: 900px) {
+    .header {
+        top: 5%;
+        left: 25%;
+    }
+
+    .file-upload-visual {
+        width: 60%;
+        left: 20%;
+        animation: jump 1s alternate infinite;
+    }
+
+    .continue-button {
+        width: 80%;
+        left: 10%;
+        font-size: 2em;
+    }
 }

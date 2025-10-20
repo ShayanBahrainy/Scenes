@@ -5,12 +5,14 @@
         <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
         <link href="/static/admin_videos.css" rel="stylesheet">
         <script src="/static/admin_videos.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+        <button class="back-button">Home</button>
         <div class="videos">
             {% for video in videos %}
             <div class="video-container">
-                <video id="my-video" class="video-js video-player" controls preload="auto" width="320" height="132" data-setup="{}">
+                <video id="my-video" class="video-js video-player" controls preload="auto" width="{{320 if not is_mobile else 210}}" height="{{132 if not is_mobile else 66}}" data-setup="{}">
                 <source src="{{video.src}}" type="application/x-mpegurl">
                 <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider upgrading to a
@@ -29,6 +31,11 @@
             {% for i in range(1, page_count + 1) %}
             <p data-page="{{i-1}}" class="page-link">Page {{i}}</p>
             {% endfor %}
+        </div>
+        <div class="nav-bar">
+            <button class="previous-button">Previous Page</button>
+            <p class="page-num"></p>
+            <button class="forward-button">Next Page</button>
         </div>
     </body>
 </html>

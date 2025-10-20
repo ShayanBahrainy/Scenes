@@ -81,7 +81,7 @@
     width: 75%;
     left: 12.5%;
     top: 20%;
-    height: 2em;
+    height: 4em;
 }
 
 .published-button {
@@ -122,12 +122,25 @@
 
     .action-section {
         left: 30%;
-        top: 80%;
+        top: 60%;
+        height: 40%;
     }
 
     .action-section button {
-        width: 50%;
+        width: 65%;
         left: 25%;
+    }
+
+    .upload-button {
+        top: 30%;
+    }
+
+    .drafts-button {
+        top: 45%;
+    }
+
+    .published-button {
+        top: 70%;
     }
 
 }

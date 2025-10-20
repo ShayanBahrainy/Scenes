@@ -24,4 +24,9 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         })
     })
+
+    const backButton = this.document.querySelector('.back-button');
+    backButton.addEventListener('click', function () {
+        window.location = '/admin/dashboard/';
+    })
 })
