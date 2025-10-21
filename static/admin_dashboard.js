@@ -16,14 +16,18 @@ window.addEventListener("DOMContentLoaded", function () {
     }
 
     this.document.querySelector(".upload-button").addEventListener("click", function() {
-        window.location.href = "/admin/upload"
+        window.location = "/admin/upload"
     })
 
     this.document.querySelector(".drafts-button").addEventListener("click", function() {
-        window.location.href = "/admin/drafts"
+        window.location = "/admin/drafts"
     })
 
     this.document.querySelector(".published-button").addEventListener("click", function() {
-        window.location.href = "/admin/published"
+        window.location = "/admin/published"
+    })
+
+    this.document.querySelector(".email-dashboard").addEventListener("click", function () {
+        window.location = "/admin/email_dashboard"
     })
 })

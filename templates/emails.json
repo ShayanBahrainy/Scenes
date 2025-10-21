@@ -1,0 +1,13 @@
+{
+    "emails" : [
+        {% for email in drafted_emails %}
+        {
+            "id": {{ email.id }},
+            "title": "{{ email.title }}",
+            "body": "{{ email.body }}",
+            "status": "{{ email.status }}",
+            "opened_time": "{{ email.opened_time }}"
+        } {% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}

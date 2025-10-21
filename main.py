@@ -3,7 +3,7 @@ from werkzeug.security import safe_join
 from werkzeug.utils import secure_filename
 import user_agents
 from utils import get_time
-from mail import EmailManager
+from mail import Email, EmailManager, EmailStatus
 from accounts import Account, Cookie, SubscriptionStatus, admin_auth
 from payments import PaymentAccount, Payment
 from streamer import Streamer
@@ -421,6 +421,22 @@ def admin_published():
         except:
             return abort(400)
         return "Video reverted to draft"
+
+@app.route("/admin/email_dashboard/")
+def email_dashboard():
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+    return render_template("email_dashboard.html")
+
+@app.route("/email/", methods=["GET", "POST"])
+def email_api():
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+
+    drafted_emails = db.session.query(Email).filter(Email.status == EmailStatus.OPEN.value).all()
+
+    return Response(render_template("emails.json", drafted_emails=drafted_emails), mimetype="application/json")
+
 
 @app.route("/videos/<video_name>/<quality>/<filename>.m3u8")
 def admin_return_playlist(video_name, quality, filename):
