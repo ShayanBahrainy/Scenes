@@ -10,10 +10,12 @@ pre {
 
 @media (max-width: 900px) {
     pre {
-        top: 50%;
-        left: 0%;
+        top: 25%;
+        left: 5%;
         width: 100%;
-        text-align: center;
         font-size: 1em;
+        margin: 0px;
+        padding: 0px;
+        text-align: start;
     }
 }
