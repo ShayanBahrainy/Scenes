@@ -19,7 +19,7 @@ class Account(db.Model):
     subscription_status = db.Column(db.Enum(SubscriptionStatus.NONE, SubscriptionStatus.PLUS, name="subscription"), nullable=False)
     signup_time = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, email: str, subscription_status: int, signup_time: int):
+    def __init__(self, email: str, subscription_status: SubscriptionStatus, signup_time: int):
         self.email = email
         self.subscription_status = subscription_status
         self.signup_time = signup_time

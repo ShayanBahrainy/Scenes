@@ -241,7 +241,7 @@ def stripe_webhook():
         for entitlement in entitlements:
             if entitlement["lookup_key"] == "full-quality-video":
                 has_video = True
-        payment_account.user.subscription_status = SubscriptionStatus.PLUS if has_video else SubscriptionStatus.NONE
+        payment_account.user.subscription_status = SubscriptionStatus.PLUS.value if has_video else SubscriptionStatus.NONE.value
 
     if event.type == "payment_intent.succeeded":
         stripe_id = event.data.object.get("customer")
