@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import user_agents
 from utils import get_time
 from mail import EmailManager
-from accounts import Account, Cookie, admin_auth
+from accounts import Account, Cookie, SubscriptionStatus, admin_auth
 from payments import PaymentAccount, Payment
 from streamer import Streamer
 from models import db
@@ -81,7 +81,7 @@ def login_verify():
             account = db.session.query(Account).filter(Account.email == email).one_or_none()
             needs_setup = True if not account else account.name == None
             if not account:
-                account = Account(email, 'none', get_time())
+                account = Account(email, SubscriptionStatus.NONE, get_time())
                 db.session.add(account)
             cookie = Cookie(email)
 
@@ -199,7 +199,7 @@ def subscribe():
     cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
     if not cookie:
         return redirect("/login-start")
-    if cookie.user.subscription_status == 'plus':
+    if cookie.user.subscription_status == SubscriptionStatus.PLUS:
         return redirect("/")
     return render_template("subscribe.html")
 
@@ -241,7 +241,7 @@ def stripe_webhook():
         for entitlement in entitlements:
             if entitlement["lookup_key"] == "full-quality-video":
                 has_video = True
-        payment_account.user.subscription_status = "plus" if has_video else "none"
+        payment_account.user.subscription_status = SubscriptionStatus.PLUS if has_video else SubscriptionStatus.NONE
 
     if event.type == "payment_intent.succeeded":
         stripe_id = event.data.object.get("customer")
@@ -273,7 +273,7 @@ def master_playlist():
     cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
     if not cookie:
         return streamer.get_master_playlist()
-    if cookie.user.subscription_status != "plus":
+    if cookie.user.subscription_status != SubscriptionStatus.PLUS:
         return streamer.get_master_playlist()
     return streamer.get_master_playlist(True)
 
@@ -290,7 +290,7 @@ def get_playlist(quality):
         if not cookie:
             return make_response("Invalid authentication", 401)
 
-        if cookie.user.subscription_status != "plus":
+        if cookie.user.subscription_status != SubscriptionStatus.PLUS:
             return make_response("Not authorized", 403)
 
     return streamer.get_media_playlist(quality)
@@ -305,7 +305,7 @@ def return_video_file(video_name, quality, file_name):
         if not cookie:
             return make_response("Invalid authentication", 401)
 
-        if cookie.user.subscription_status != "plus":
+        if cookie.user.subscription_status != SubscriptionStatus.PLUS:
             return make_response("Not authorized", 403)
 
     path = safe_join(safe_join(video_name, quality), file_name+".ts")
@@ -327,7 +327,7 @@ def faq_route():
 def admin_dashboard():
     if admin_auth(request, ADMIN_EMAIL):
         num_accounts = db.session.query(Account).count()
-        num_subscribers = db.session.query(Account).filter(Account.subscription_status == 'plus').count()
+        num_subscribers = db.session.query(Account).filter(Account.subscription_status == SubscriptionStatus.PLUS).count()
         #num_accounts = 50
         #num_subscribers = 25
         plus_price = stripe.Price.retrieve(SCENERY_PLUS_ID)["unit_amount"]

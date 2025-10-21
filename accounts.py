@@ -4,13 +4,19 @@ from flask import Request
 import secrets
 import string
 from models import db
+from enum import StrEnum
+
+class SubscriptionStatus(StrEnum):
+    NONE = 'none'
+    PLUS = 'plus'
+
 
 class Account(db.Model):
     __tablename__ = 'accounts'
 
     name = db.Column(db.String(50))
     email = db.Column(db.String(50), primary_key=True, unique=True)
-    subscription_status = db.Column(db.Enum('none', 'plus', name="subscription"), nullable=False)
+    subscription_status = db.Column(db.Enum(SubscriptionStatus.NONE, SubscriptionStatus.PLUS, name="subscription"), nullable=False)
     signup_time = db.Column(db.Integer, nullable=False)
 
     def __init__(self, email: str, subscription_status: int, signup_time: int):
