@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Edit an email - Scenery</title>
+        <link href="/static/edit_email.css" rel="stylesheet">
+        <script src="/static/edit_email.js"></script>
+    </head>
+    <body>
+        <input name="title" required class="title-field" value="{{email.title if email else 'Type the title here...'}}" type="text">
+        <textarea name="body" required class="body-field">{{email.body if email else 'Type the body here...'}}</textarea>
+
+    </body>
+</html>

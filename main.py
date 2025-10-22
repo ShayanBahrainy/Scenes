@@ -431,15 +431,18 @@ def email_dashboard():
 
     return render_template("email_dashboard.html", drafted_emails=drafted_emails)
 
-@app.route("/email/", methods=["GET", "POST"])
-def email_api():
+@app.route("/admin/email/edit/<email_id>", methods=["GET", "POST"])
+def admin_email_edit(email_id):
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
 
-    drafted_emails = db.session.query(Email).filter(Email.status == EmailStatus.OPEN.value).all()
+    email = db.session.query(Email).filter(Email.id == email_id).one_or_none()
 
-    return Response(render_template("emails.json", drafted_emails=drafted_emails), mimetype="application/json")
+    if not email:
+        return abort(400)
 
+    if request.method == "GET":
+        return render_template("edit_email.html", email=email)
 
 @app.route("/videos/<video_name>/<quality>/<filename>.m3u8")
 def admin_return_playlist(video_name, quality, filename):
