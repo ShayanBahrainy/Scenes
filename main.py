@@ -462,7 +462,7 @@ def serve_draft(video_name, quality, filename):
 
 @app.errorhandler(404)
 def error_404(e):
-    return render_template("404.html")
+    return Response(render_template("404.html"), status=404)
 
 if __name__ == "__main__":
     with app.app_context():
