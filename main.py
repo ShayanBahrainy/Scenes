@@ -426,7 +426,10 @@ def admin_published():
 def email_dashboard():
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
-    return render_template("email_dashboard.html")
+
+    drafted_emails = db.session.query(Email).filter(Email.status != EmailStatus.CLOSED.value).all()
+
+    return render_template("email_dashboard.html", drafted_emails=drafted_emails)
 
 @app.route("/email/", methods=["GET", "POST"])
 def email_api():

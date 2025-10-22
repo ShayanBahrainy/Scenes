@@ -7,7 +7,30 @@
     </head>
     <body>
         <h1 class="header">Email Dashboard</h1>
-        <h2 class="sent-emails">Previously Sent Emails</h2>
-        
+        <h2 class="created-emails">Created emails</h2>
+        <button class="create-new hover-element">Create new email</button>
+        <div class="emails">
+            <div class="email">
+                <p class="column grid-header column-border">Title</p>
+                <p class="column grid-header column-border">Body</p>
+                <p class="column grid-header column-border">Audience</p>
+                <p class="column grid-header column-border">Status</p>
+                <p class="column grid-header column-border">Action</p>
+            </div>
+            {% for email in drafted_emails %}
+            <div class="email">
+                <p class="column column-border">{{email.title}}</p>
+                <p class="column column-border">{{email.body}}</p>
+                <p class="column column-border">{{email.audience}}</p>
+                <p class="column column-border">{{email.status}}</p>
+                <div class="column grid-header column-border">
+                    {% if email.status == 'open' %}
+                    <button class="send-button hover-element" data-email-id="{{email.id}}">Send</button>
+                    <button class="edit-button hover-element" data-email-id="{{email.id}}">Edit</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </body>
 </html>
