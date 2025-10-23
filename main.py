@@ -442,7 +442,26 @@ def admin_email_edit(email_id):
         return abort(400)
 
     if request.method == "GET":
-        return render_template("edit_email.html", email=email)
+        return render_template("emails.json", emails=[email])
+
+    if request.method == "POST":
+        if not request.is_json:
+            return abort(400)
+
+        if email.status != EmailStatus.OPEN:
+            return Response("Email is not open.", status=400)
+
+        data = request.get_json()
+
+        if not data["title"] or not data["body"]:
+            return Response("Required fields missing", status=400)
+
+        email.title = data["title"]
+        email.body = data["body"]
+
+        db.session.commit()
+
+        return "Email updated"
 
 @app.route("/videos/<video_name>/<quality>/<filename>.m3u8")
 def admin_return_playlist(video_name, quality, filename):

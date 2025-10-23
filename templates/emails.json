@@ -1,6 +1,6 @@
 {
     "emails" : [
-        {% for email in drafted_emails %}
+        {% for email in emails %}
         {
             "id": {{ email.id }},
             "title": "{{ email.title }}",

@@ -15,6 +15,10 @@ body {
   border-radius: 0;
 }
 
+.no-highlight:focus-visible {
+    outline: none;
+}
+
 .hover-element {
     border: none;
     background-color: var(--secondary-color);
