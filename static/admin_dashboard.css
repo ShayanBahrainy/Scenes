@@ -92,6 +92,15 @@
     top: 30%;
 }
 
+.email-dashboard {
+    position: absolute;
+    width: 75%;
+    left: 12.5%;
+    height: 5em;
+    top: 40%;
+}
+
+
 @keyframes switch-right {
     from { transform: translateX(0%); height: 90%;}
     to { transform: translateX(200%); height: 80%;}
