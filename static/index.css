@@ -161,6 +161,16 @@
     width: 20%;
 }
 
+.clock {
+    position: absolute;
+    left: 35%;
+    font-size: 3em;
+    top: 0%;
+    z-index: 2;
+    color: var(--background-color);
+}
+
+
 @keyframes button-glow {
     0% {
         box-shadow: 0px 0px 20px var(--secondary-color);
