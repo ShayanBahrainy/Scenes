@@ -46,7 +46,7 @@ def index(message=None):
     if "auth" in request.cookies:
         cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).first()
         if cookie:
-            return render_template("index.html", user=cookie.user, message=message)
+            return render_template("index.html", user=cookie.user, message=message, is_admin=cookie.user.email==ADMIN_EMAIL)
     return render_template("index.html", message=message)
 
 @app.route("/login-start/", methods=["POST", "GET"])

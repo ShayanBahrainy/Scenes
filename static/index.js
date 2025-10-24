@@ -17,4 +17,9 @@ window.addEventListener("load", function () {
     subscribe.addEventListener("click", function () {
         location = "/why-subscribe"
     })
+
+    const adminButton = this.document.getElementById("admin")
+    adminButton.addEventListener("click", function () {
+        location = "/admin/dashboard"
+    })
 })

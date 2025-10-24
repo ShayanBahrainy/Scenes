@@ -20,13 +20,18 @@
                     <option value="there">There</option>
                     <option value="everywhere">Everywhere</option>
                 </select>
-                {% if user.subscription_status == "plus" %}
-                <form method="post" action="/create-portal-session">
-                    <button class="menu-button" type="submit">Manage Subscription</button>
-                </form>
-                {% else %}
-                    <button class="menu-button" id="subscribe">Subscribe</button>
-                {% endif %}
+                <div class="buttons">
+                    {% if user.subscription_status == "plus" %}
+                    <form method="post" action="/create-portal-session">
+                        <button class="menu-button" type="submit">Manage Subscription</button>
+                    </form>
+                    {% else %}
+                        <button class="menu-button" id="subscribe">Subscribe</button>
+                    {% endif %}
+                    {% if is_admin %}
+                        <button class="admin-button" id="admin">Administrator Dashboard</button>
+                    {% endif %}
+                </div>
             {% else %}
                 <button onclick="location='/login-start'" class="menu-button">Login</button>
             {% endif %}
