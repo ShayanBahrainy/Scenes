@@ -54,17 +54,20 @@ window.addEventListener("load", function () {
     });
 
     const logoutmenu = this.document.querySelector(".logout-menu")
-    logoutmenu.addEventListener("change", function () {
+    logoutmenu?.addEventListener("change", function () {
         window.location = "/logout/" + logoutmenu.value
     })
 
     const subscribe = this.document.getElementById("subscribe")
-    subscribe.addEventListener("click", function () {
+    subscribe?.addEventListener("click", function () {
         location = "/why-subscribe"
     })
 
     const adminButton = this.document.getElementById("admin")
-    adminButton.addEventListener("click", function () {
+    adminButton?.addEventListener("click", function () {
         location = "/admin/dashboard"
     })
+
+    const clock = this.document.querySelector(".clock")
+    this.setInterval(updateClock, 1000, clock)
 })
