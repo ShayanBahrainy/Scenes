@@ -328,10 +328,9 @@ def admin_dashboard():
     if admin_auth(request, ADMIN_EMAIL):
         num_accounts = db.session.query(Account).count()
         num_subscribers = db.session.query(Account).filter(Account.subscription_status == SubscriptionStatus.PLUS).count()
-        #num_accounts = 50
-        #num_subscribers = 25
         plus_price = stripe.Price.retrieve(SCENERY_PLUS_ID)["unit_amount"]
-        return render_template("admin_dashboard.html", num_accounts=num_accounts, num_subscribers=num_subscribers, plus_price=plus_price)
+        current_balance = stripe.Balance.retrieve()["available"][0]["amount"]
+        return render_template("admin_dashboard.html", num_accounts=num_accounts, num_subscribers=num_subscribers, plus_price=plus_price, current_balance=current_balance)
     return abort(401)
 
 @app.route("/admin/upload/", methods=["GET", "POST"])

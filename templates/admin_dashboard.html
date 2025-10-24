@@ -26,6 +26,8 @@
             <p>{{(num_subscribers * plus_price)/100 | round(2)}}</p>
             <h1 class="annual-rev">Projected Annual Revenue</h1>
             <p>{{(num_subscribers * plus_price * 12)/100 | round(2)}}</p>
+            <h1 class="current-bal">Current Balance</h1>
+            <p>${{current_balance/100 | round(2)}}</p>
         </div>
         <div class="action-section">
             <h1>Actions</h1>
