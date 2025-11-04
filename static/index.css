@@ -245,5 +245,9 @@
         text-align: center;
     }
 
+    .clock {
+        font-size: 1em;
+    }
+
 
 }
