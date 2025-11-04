@@ -48,3 +48,38 @@
     height: 7.5%;
     border-radius: 2%;
 }
+
+@keyframes jump {
+    0% {
+        transform: translateY(0%);
+    }
+    30% {
+        transform: translateY(0%);
+    }
+    65% {
+        transform: translateY(-50%);
+    }
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+@media (max-width: 900px) {
+    .header {
+        font-size: 2em;
+        left: 20%;
+    }
+    .submit-button {
+        width: 50%;
+        left: 25%;
+        animation: jump 3s infinite;
+    }
+    .email-field {
+        width: 40%;
+        left: 30%;
+    }
+    .code-field {
+        width: 40%;
+        left: 30%;
+    }
+}
