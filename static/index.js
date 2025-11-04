@@ -69,5 +69,6 @@ window.addEventListener("load", function () {
     })
 
     const clock = this.document.querySelector(".clock")
-    this.setInterval(updateClock, 1000, clock)
+    updateClock(clock)
+    this.setInterval(updateClock, 1000 * 10, clock)
 })
