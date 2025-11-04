@@ -39,3 +39,15 @@ body {
     color: var(--background-color);
     transition-duration: 5s;
 }
+
+.back-button {
+    background-color: transparent;
+    color: var(--tint-color);
+    border: none;
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    width: 5%;
+    font-size: 1.5em;
+    z-index: 1;
+}
