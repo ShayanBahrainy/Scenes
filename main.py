@@ -3,7 +3,7 @@ from werkzeug.security import safe_join
 from werkzeug.utils import secure_filename
 import user_agents
 from utils import get_time
-from mail import Email, EmailManager, EmailStatus
+from mail import Email, EmailManager, EmailStatus, EmailAudience
 from accounts import Account, Cookie, SubscriptionStatus, admin_auth
 from payments import PaymentAccount, Payment
 from streamer import Streamer
@@ -429,6 +429,30 @@ def email_dashboard():
     drafted_emails = db.session.query(Email).filter(Email.status != EmailStatus.CLOSED.value).all()
 
     return render_template("email_dashboard.html", drafted_emails=drafted_emails)
+
+@app.route("/admin/email/create", methods=["POST"])
+def admin_email_create():
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+
+    data = request.json
+
+    if "title" not in data:
+        return Response("Please supply a valid title.", status=400)
+
+    if "body" not in data:
+        return Response("Please supply a valid body.", status=400)
+
+    if "audience" not in data:
+        return Response("Please supply a valid audience.", status=400)
+
+    email = Email(title=data["title"], body=data["body"], audience=EmailAudience.ALL)
+
+    db.session.add(email)
+
+    db.session.commit()
+
+    return "Email created."
 
 @app.route("/admin/email/edit/<email_id>", methods=["GET", "POST"])
 def admin_email_edit(email_id):
