@@ -20,6 +20,18 @@ async function loadEmail(id) {
     bodyField.value = email["body"]
 }
 
+function loadTemplateEmail() {
+    const editor = document.getElementById(EDITOR_ID)
+
+    editor.removeAttribute("data-email-id")
+
+    let titleField = document.querySelector(".title-input")
+    let bodyField = document.querySelector(".body-input")
+
+    titleField.value = "What a fun title!"
+    bodyField.value = "Really? You didn't change the body? Come on now, it's so fun!"
+}
+
 function toggleEditorVisibility() {
     let editor = document.getElementById("email-editor")
 
@@ -43,11 +55,16 @@ async function save() {
 
     const email_id = editor.getAttribute("data-email-id")
 
-    await fetch("/admin/email/edit/" + email_id, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: new Headers({'content-type': 'application/json'})
-    })
+    if (email_id) {
+        await fetch("/admin/email/edit/" + email_id, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: new Headers({'content-type': 'application/json'})
+        })
+    }
+    else {
+        await fetch("/admin/email/new/")
+    }
 
     toggleEditorVisibility()
     location = location
@@ -56,7 +73,8 @@ async function save() {
 window.addEventListener("DOMContentLoaded", function () {
     const createNewButton = this.document.querySelector(".create-new")
     createNewButton.addEventListener("click", function () {
-        location = "/admin/email/new"
+        toggleEditorVisibility()
+        loadTemplateEmail()
     })
 
     const sendButtons = this.document.querySelectorAll(".send-button")
