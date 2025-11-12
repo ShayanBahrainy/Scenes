@@ -9,6 +9,9 @@ import os
 import secrets
 import string
 import datetime
+import threading
+import time
+import queue
 
 
 def get_time() -> int:
@@ -20,10 +23,10 @@ EMAIL_CONFIG = {
     "from" : os.environ.get("SCENERY_FROM_EMAIL")
 }
 
-
 env = Environment(loader=FileSystemLoader("email_templates"))
 
 EMAIl_VERIFICATION_TEMPLATE = env.get_template("email_verification.html")
+GROUP_EMAIl_TEMPLATE = env.get_template("group_email.html")
 
 class EmailVerificationResult:
     def __init__(self, success: bool, email: str, reason: str):
@@ -112,6 +115,39 @@ class EmailAudience(StrEnum):
     PLUS = "PLUS"
     FREE = "FREE"
 
+class EmailSendManager(threading.Thread):
+    def __init__(self, email_manager: EmailManager):
+        super().__init__()
+        self.send_queue = queue.Queue()
+        self.email_manager = email_manager
+
+    def run(self):
+        context = app.app_context()
+
+        while True:
+            with context:
+                email_id = self.send_queue.get()
+                email = db.session.query(Email).filter(Email.id == email_id).one()
+
+                assert email.status == EmailStatus.OPEN
+
+                email.status = EmailStatus.QUEUED
+
+                audience_list = Email.__get_audience__(email.audience)
+
+                for email_adr in audience_list:
+                    db.session.add(EmailSendAttempt(email.id, email_adr, EmailAttemptStatus.NOT_ATTEMPTED.value))
+
+                self.queued_time = get_time()
+                db.session.commit()
+
+                unsent_attempt = db.session.query(EmailSendAttempt).filter(EmailSendAttempt.status == EmailAttemptStatus.NOT_ATTEMPTED.value).first()
+
+                if unsent_attempt:
+                    self.email_manager.send_email(unsent_attempt.recipient_email, unsent_attempt.email.title, GROUP_EMAIl_TEMPLATE.render(email=email))
+
+            time.sleep(3)
+
 class Email(db.Model):
     __tablename__ = 'emails'
 
@@ -140,26 +176,11 @@ class Email(db.Model):
         if audience == EmailAudience.FREE:
             return [account.email for account in db.session.query(Account).filter(Account.subscription_status == SubscriptionStatus.NONE.value).all()]
 
-    def send(self):
-        assert self.status == EmailStatus.OPEN
-        self.status = EmailStatus.QUEUED
-        audience_list = Email.__get_audience__(self.audience)
-        for email in audience_list:
-            db.session.add(EmailSendAttempt(self.id, email, EmailAttemptStatus.NOT_ATTEMPTED.value))
-        self.queued_time = get_time()
-        db.session.commit()
-
     def __repr__(self):
         return f"Email({self.title}, {self.body}, {self.status}, {self.opened_time})"
 
 if __name__ == "__main__":
-
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://scenery:Scenery@localhost:5432/scenery'
-
     context = app.app_context()
-
-    db.init_app(app)
 
     with context:
         db.create_all()
