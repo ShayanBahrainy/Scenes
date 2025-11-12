@@ -1,6 +1,7 @@
 from flask import Flask
 from jinja2 import Environment, FileSystemLoader
 from models import db
+from app import app
 from enum import StrEnum
 from accounts import Account, SubscriptionStatus
 import resend

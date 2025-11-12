@@ -3,28 +3,25 @@ from werkzeug.security import safe_join
 from werkzeug.utils import secure_filename
 import user_agents
 from utils import get_time
-from mail import Email, EmailManager, EmailStatus, EmailAudience
+from mail import Email, EmailManager, EmailStatus, EmailAudience, EmailSendManager
 from accounts import Account, Cookie, SubscriptionStatus, admin_auth
 from payments import PaymentAccount, Payment
 from streamer import Streamer
 from models import db
+from app import app
 from stripe_config import stripe
 from video_processor import VideoProcessor, Video
 import os
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://scenery:Scenery@localhost:5432/scenery'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['UPLOAD_FOLDER'] = 'uploaded/'
-
-db.init_app(app)
 
 HOST = os.environ.get("SCENERY_DOMAIN")
 if not HOST:
     HOST = "127.0.0.1:5000"
 
 emailmanager = EmailManager(HOST)
-
+emailsendmanager = EmailSendManager(email_manager)
 PREMIUM_QUALITIES = [Streamer.TEN_EIGHTY_P]
 
 
@@ -430,7 +427,7 @@ def email_dashboard():
 
     return render_template("email_dashboard.html", drafted_emails=drafted_emails)
 
-@app.route("/admin/email/create", methods=["POST"])
+@app.route("/admin/email/create/", methods=["POST"])
 def admin_email_create():
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
@@ -486,6 +483,43 @@ def admin_email_edit(email_id):
 
         return "Email updated"
 
+@app.route("/admin/email/delete/<email_id>/", methods=["DELETE"])
+def admin_email_delete(email_id):
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+
+    email = db.session.query(Email).filter(Email.id == email_id).one_or_none()
+
+    if not email:
+        return abort(400)
+
+    if email.status != EmailStatus.OPEN:
+        return Response("Email is not open.", status=400)
+
+    db.session.delete(email)
+
+    db.session.commit()
+
+    return Response("Email deleted", status=204)
+
+@app.route("/admin/email/send/<email_id>/", methods=["POST"])
+def admin_email_send(email_id):
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+
+    email = db.session.query(Email).filter(Email.id == email_id).one_or_none()
+
+    if not email:
+        return abort(400)
+
+    if email.status != EmailStatus.OPEN:
+        return Response("Email is not open.", status=400)
+
+    emailsendmanager.send_queue.put(email.id)
+
+    return "Email will be sent."
+
+
 @app.route("/videos/<video_name>/<quality>/<filename>.m3u8")
 def admin_return_playlist(video_name, quality, filename):
     if not admin_auth(request, ADMIN_EMAIL):
@@ -516,4 +550,5 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     streamer.start()
+    emailsendmanager.start()
     app.run("0.0.0.0")
