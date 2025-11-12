@@ -97,7 +97,6 @@ window.addEventListener("DOMContentLoaded", function () {
             const id = self.getAttribute("data-email-id")
             fetch("/admin/email/send/" + id, {
                 method: "POST",
-                data: JSON.stringify({email_id:id})
             })
         })
     })
