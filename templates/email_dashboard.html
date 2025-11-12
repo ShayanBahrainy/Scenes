@@ -27,6 +27,7 @@
                     {% if email.status == 'open' %}
                     <button class="send-button hover-element" data-email-id="{{email.id}}">Send</button>
                     <button class="edit-button hover-element" data-email-id="{{email.id}}">Edit</button>
+                    <button class="delete-button hover-element" data-email-id="{{email.id}}" data-email-title="{{email.title}}">Delete</button>
                     {% endif %}
                 </div>
             </div>

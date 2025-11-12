@@ -20,6 +20,15 @@ async function loadEmail(id) {
     bodyField.value = email["body"]
 }
 
+function deleteEmail(id, title) {
+    const confirmation = confirm("Are you sure you want to delete email '" + title + "'?")
+    if (confirmation) {
+        fetch("/admin/email/delete/" + id, {
+            method: "DELETE"
+        })
+    }
+}
+
 function loadTemplateEmail() {
     const editor = document.getElementById(EDITOR_ID)
 
@@ -50,7 +59,8 @@ async function save() {
 
     let data = {
         "title" : document.querySelector(".title-input").value,
-        "body" : document.querySelector(".body-input").value
+        "body" : document.querySelector(".body-input").value,
+        "audience" : "all"
     }
 
     const email_id = editor.getAttribute("data-email-id")
@@ -63,7 +73,11 @@ async function save() {
         })
     }
     else {
-        await fetch("/admin/email/new/")
+        await fetch("/admin/email/create/", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: new Headers({"content-type": 'application/json'})
+        })
     }
 
     toggleEditorVisibility()
@@ -81,7 +95,7 @@ window.addEventListener("DOMContentLoaded", function () {
     sendButtons.forEach(function (self) {
         self.addEventListener("click", function () {
             const id = self.getAttribute("data-email-id")
-            fetch("/admin/email/send", {
+            fetch("/admin/email/send/" + id, {
                 method: "POST",
                 data: JSON.stringify({email_id:id})
             })
@@ -110,4 +124,14 @@ window.addEventListener("DOMContentLoaded", function () {
 
     const saveButton = this.document.querySelector(".save-button")
     saveButton.addEventListener("click", save)
+
+
+    const deleteButtons = this.document.querySelectorAll(".delete-button")
+    deleteButtons.forEach(function (btn, _, _) {
+        btn.addEventListener("click", function () {
+            const id = btn.getAttribute("data-email-id")
+            const title = btn.getAttribute("data-email-title")
+            deleteEmail(id, title)
+        })
+    })
 })
