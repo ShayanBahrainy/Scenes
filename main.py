@@ -20,7 +20,7 @@ HOST = os.environ.get("SCENERY_DOMAIN")
 if not HOST:
     HOST = "127.0.0.1:5000"
 
-emailmanager = EmailManager(HOST)
+email_manager = EmailManager(HOST)
 emailsendmanager = EmailSendManager(email_manager)
 PREMIUM_QUALITIES = [Streamer.TEN_EIGHTY_P]
 
@@ -54,7 +54,7 @@ def login_start():
         email = request.form.get("email")
         if not email:
             return render_template("create_or_login.html", error="Please enter your email." if not email else None)
-        emailmanager.send_code(email)
+        email_manager.send_code(email)
         return redirect("/login-code/")
 
 
@@ -73,7 +73,7 @@ def login_verify():
         email = request.form.get("email")
         if not code or not email:
             return render_template("verify_email.html", error="Please enter your email!" if not email else "Please enter your verification code!")
-        verification = emailmanager.verify(email, code)
+        verification = email_manager.verify(email, code)
         if verification.success:
             account = db.session.query(Account).filter(Account.email == email).one_or_none()
             needs_setup = True if not account else account.name == None
