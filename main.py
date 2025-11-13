@@ -292,7 +292,9 @@ def get_playlist(quality):
         if cookie.user.subscription_status != SubscriptionStatus.PLUS:
             return make_response("Not authorized", 403)
 
-    return streamer.get_media_playlist(quality)
+    r = Response(streamer.get_media_playlist(quality))
+    r.headers["Content-Type"] = "application/vnd.apple.mpegurl"
+    return r
 
 @app.route("/videos/<video_name>/<quality>/<file_name>.ts")
 def return_video_file(video_name, quality, file_name):
@@ -308,7 +310,9 @@ def return_video_file(video_name, quality, file_name):
             return make_response("Not authorized", 403)
 
     path = safe_join(safe_join(video_name, quality), file_name+".ts")
-    return send_from_directory(VIDEO_FOLDER, path)
+    r = send_from_directory(VIDEO_FOLDER, path, mimetype="video/MP2T")
+
+    return r
 
 @app.route("/about-me")
 def about_me():
