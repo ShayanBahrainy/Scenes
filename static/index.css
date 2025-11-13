@@ -199,7 +199,7 @@
     .hamburger {
         font-size: 5em;
         left: 75%;
-        z-index: 1;
+        z-index: 2;
     }
 
     .menu {
