@@ -265,14 +265,16 @@ def stripe_webhook():
 
 @app.route("/scenery.m3u8")
 def master_playlist():
-    if "auth" not in request.cookies:
-        return streamer.get_master_playlist()
-    cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
-    if not cookie:
-        return streamer.get_master_playlist()
-    if cookie.user.subscription_status != SubscriptionStatus.PLUS:
-        return streamer.get_master_playlist()
-    return streamer.get_master_playlist(True)
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
+        if cookie:
+            if cookie.user.subscription_status == SubscriptionStatus.PLUS:
+                r = Response(streamer.get_master_playlist(True))
+                r.headers["Content-Type"] = "application/vnd.apple.mpegurl"
+                return r
+    r = Response(streamer.get_master_playlist(True))
+    r.headers["Content-Type"] = "application/vnd.apple.mpegurl"
+    return r
 
 @app.route("/<quality>.m3u8")
 def get_playlist(quality):
