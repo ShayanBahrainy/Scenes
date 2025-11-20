@@ -62,42 +62,34 @@
 
 .action-section {
     position: absolute;
+    width: 30%;
+    left: 5%;
     top: 10%;
-    left: 10%;
     height: 90%;
     color: var(--tint-color);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .upload-button {
-    position: absolute;
     width: 75%;
-    left: 12.5%;
-    top: 10%;
     height: 2em;
 }
 
 .drafts-button {
-    position: absolute;
     width: 75%;
-    left: 12.5%;
-    top: 20%;
     height: 4em;
 }
 
 .published-button {
-    position: absolute;
     width: 75%;
-    left: 12.5%;
     height: 5em;
-    top: 30%;
 }
 
 .email-dashboard {
-    position: absolute;
     width: 75%;
-    left: 12.5%;
     height: 5em;
-    top: 40%;
 }
 
 
@@ -130,26 +122,14 @@
     }
 
     .action-section {
-        left: 30%;
-        top: 60%;
-        height: 40%;
+        top: 80%;
+        left: 25%;
+        width: 60%;
     }
 
     .action-section button {
-        width: 65%;
-        left: 25%;
-    }
-
-    .upload-button {
-        top: 30%;
-    }
-
-    .drafts-button {
-        top: 45%;
-    }
-
-    .published-button {
-        top: 70%;
+        width: 100%;
+        font-size: 1em;
     }
 
 }
