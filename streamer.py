@@ -185,11 +185,11 @@ class Streamer(threading.Thread):
             time.sleep(Streamer.TARGET_DURATION)
 
     def get_media_playlist(self, quality=THREE_SIXTY_P) -> str:
-        return self.playlists[quality]
+        return self.playlists[quality].strip()
 
     def get_master_playlist(self, premium=False) -> str:
         if premium:
-            return MASTER_PLAYLIST
+            return MASTER_PLAYLIST.strip()
 
         cleaned_lines = []
         lines = MASTER_PLAYLIST.splitlines()
@@ -200,7 +200,7 @@ class Streamer(threading.Thread):
                 else:
                     cleaned_lines.pop()
 
-        return "\n".join(cleaned_lines)
+        return "\n".join(cleaned_lines).strip()
 
 if __name__ == "__main__":
     BASE_PATH = "/home/shayanbahrainy/Videos/Nature vids/converted/"
