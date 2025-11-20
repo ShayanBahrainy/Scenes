@@ -33,8 +33,8 @@ class Streamer(threading.Thread):
     THREE_SIXTY_P = "360"
     SEVEN_TWENTY_P = "720"
     TEN_EIGHTY_P = "1080"
-    TARGET_LIST_LENGTH = 6
-    TARGET_DURATION = 10
+    TARGET_LIST_LENGTH = 20
+    TARGET_DURATION = 11
 
     @staticmethod
     def __add_basepath__(playlist: str, path: str):
@@ -105,8 +105,8 @@ class Streamer(threading.Thread):
                 last_file_line = i
 
         i = last_file_line + 1
-        first_lines.insert(i, "#EXT-X-DISCONTINUITY")
-        i += 1
+        #first_lines.insert(i, "#EXT-X-DISCONTINUITY")
+        #i += 1
         for line in valid_lines:
             first_lines.insert(i, line)
             i += 1
