@@ -1,3 +1,4 @@
 videos/
 test/
 __pycache__/
+.env

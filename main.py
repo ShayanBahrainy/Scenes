@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from flask import *
 from werkzeug.security import safe_join
 from werkzeug.utils import secure_filename
