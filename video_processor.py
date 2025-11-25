@@ -3,16 +3,34 @@ import os
 import threading
 
 cmd_format = """
-mkdir "{video_folder}/360"
-mkdir "{video_folder}/720"
-mkdir "{video_folder}/1080"
-ffmpeg -i "{video_path}" -v error -profile:v high10 -level 3.0 -vf "scale=640:-2"  -start_number 0 -force_key_frames "expr:gte(t,n_forced*10)" -hls_time 10 -hls_list_size 0 -f hls "{video_folder}/360/360_video.m3u8"
-ffmpeg -i "{video_path}" -v error -profile:v high10 -level 3.0 -vf "scale=1280:-2"  -start_number 0 -force_key_frames "expr:gte(t,n_forced*10)" -hls_time 10 -hls_list_size 0 -f hls "{video_folder}/720/720_video.m3u8"
-ffmpeg -i "{video_path}" -v error -profile:v high10 -level 3.0 -vf "scale=1920:-2"  -start_number 0 -force_key_frames "expr:gte(t,n_forced*10)" -hls_time 10 -hls_list_size 0 -f hls "{video_folder}/1080/1080_video.m3u8"
+ffmpeg -i "{video_path}" -vn -acodec libvorbis -ab 128k -dash 1 "{video_folder}/audio.webm"
+
+ffmpeg -i "{video_path}" -c:v libvpx-vp9 -keyint_min 150 \
+-g 150 -tile-columns 4 -frame-parallel 1 -f webm -dash 1 \
+-an -vf scale=160:90 -b:v 250k -dash 1 "{video_folder}/video_0.webm" \
+-an -vf scale=320:180 -b:v 500k -dash 1 "{video_folder}/video_1.webm" \
+-an -vf scale=640:360 -b:v 750k -dash 1 "{video_folder}/video_2.webm" \
+-an -vf scale=640:360 -b:v 1000k -dash 1 "{video_folder}/video_3.webm" \
+-an -vf scale=1280:720 -b:v 3000k -dash 1 "{video_folder}/video_4.webm"
+
+ffmpeg \
+  -f webm_dash_manifest -i "{video_folder}/video_0.webm" \
+  -f webm_dash_manifest -i "{video_folder}/video_1.webm" \
+  -f webm_dash_manifest -i "{video_folder}/video_2.webm" \
+  -f webm_dash_manifest -i "{video_folder}/video_3.webm" \
+  -f webm_dash_manifest -i "{video_folder}/video_4.webm" \
+  -f webm_dash_manifest -i "{video_folder}/audio.webm" \
+  -c copy \
+  -map 0 -map 1 -map 2 -map 3 -map 4 -map 5\
+  -f webm_dash_manifest \
+  -adaptation_sets "id=0,streams=0,1,2,3,4 id=1,streams=5" \
+  "{video_folder}/video_manifest.mpd"
+
 """
 
+
 path = "/home/shayanbahrainy/Videos/Nature vids/final"
-dest_path = "/home/shayanbahrainy/Videos/Nature vids/converted"
+dest_path = "videos"
 
 class Video:
     def __init__(self, src: str, video_name: str):
@@ -56,12 +74,14 @@ class VideoProcessor(threading.Thread):
 
 
 if __name__ == "__main__":
-    for video in os.listdir(path):
-        video_name = video.split(".")[0]
+    for vid in os.listdir(path):
+        complete_vid_path = path + "/" + vid
+        video_name = vid.split(".")[0]
         print("Delete " + video_name + " folder before resuming program, if closed here. ")
         video_folder = dest_path + "/" + video_name
         try:
             os.mkdir(video_folder)
         except:
-            continue
-        video_processor = VideoProcessor(video_folder=video_folder, video_path=path+"/"+video)
+            print("Video already processed")
+        video_processor = VideoProcessor(video_folder=video_folder, video_path=complete_vid_path)
+        video_processor.run()

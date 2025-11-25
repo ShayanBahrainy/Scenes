@@ -1,0 +1,22 @@
+.fade-in {
+    animation: fade-in forwards 1s;
+}
+
+.fade-out {
+    animation: fade-in reverse 1s;
+}
+
+.video-player {
+    position: absolute;
+    left: 0%;
+    right: 0%;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
