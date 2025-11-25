@@ -124,8 +124,8 @@ class EmailSendManager(threading.Thread):
     def run(self):
         context = app.app_context()
 
-        while True:
-            with context:
+        with context:
+            while True:
                 email_id = self.send_queue.get()
                 email = db.session.query(Email).filter(Email.id == email_id).one()
 
@@ -145,8 +145,13 @@ class EmailSendManager(threading.Thread):
 
                 if unsent_attempt:
                     self.email_manager.send_email(unsent_attempt.recipient_email, unsent_attempt.email.title, GROUP_EMAIl_TEMPLATE.render(email=email))
+                    unsent_attempt.status = EmailAttemptStatus.SENT
+                    
+                    other_count = db.session.query(EmailSendAttempt).filter(EmailSendAttempt.email_id == unsent_attempt.email_id).filter(EmailSendAttempt.status == EmailAttemptStatus.NOT_ATTEMPTED).count()
 
-            time.sleep(3)
+                    if (other_count) == 0:
+                        unsent_attempt.email.status = EmailStatus.CLOSED
+                time.sleep(3)
 
 class Email(db.Model):
     __tablename__ = 'emails'
