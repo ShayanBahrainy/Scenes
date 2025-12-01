@@ -1,15 +1,5 @@
 @import url('theme.css');
 
-.video-player {
-    position: fixed;
-    top: 0%;
-    left: 0%;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-}
-
 .vjs-big-play-button {
     background-color: var(--background-color) !important;
 }
@@ -179,11 +169,82 @@
     left: 25%;
     font-size: 3em;
     top: 0%;
-    z-index: 0;
+    z-index: 2;
     color: var(--background-color);
     justify-content: center;
 }
 
+.fade-in {
+    animation: fade-in forwards 1s;
+}
+
+.fade-out {
+    animation: fade-in reverse 1s;
+}
+
+.video-wrap {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: black;
+}
+
+.video-player {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* or contain */
+}
+
+
+.video-player::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6));
+    pointer-events: none; /* So it doesn't block interactions */
+    border-radius: inherit;
+}
+
+.video-player::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+    transform: rotate(45deg);
+    transition: opacity 0.4s ease-in-out;
+    opacity: 0;
+}
+
+.videoplayer:hover::before {
+    opacity: 0.5;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    background: black; /* Fallback */
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
 @keyframes button-glow {
     0% {

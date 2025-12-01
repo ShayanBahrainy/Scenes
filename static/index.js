@@ -43,6 +43,57 @@ function generateText() {
     return `${getNumAsText(hours)} hours, ${getNumAsText(minutes)} minutes`
 }
 
+function createVideoPlayer() {
+    const video = document.createElement("video")
+    video.classList = "fade-in video-player"
+    video.autoplay = true
+
+    const video_frame = document.createElement("div")
+    video_frame.classList = "video-frame"
+
+    video_frame.appendChild(video)
+
+    return video_frame
+}
+
+function playSegment(videoFrame, segmentIndex) {
+
+    const videoPlayer = videoFrame.children[0]
+
+    let resolveOuter
+    function saveResolve(resolve) {
+        resolveOuter = resolve
+    }
+    let promise = new Promise(saveResolve)
+
+    let mediaSource = new MediaSource()
+
+    videoPlayer.src = URL.createObjectURL(mediaSource)
+
+    mediaSource.addEventListener("sourceopen", () => {
+        const videoBuffer = mediaSource.addSourceBuffer('video/webm codecs="vp9"')
+        const audioBuffer = mediaSource.addSourceBuffer('audio/webm codecs="vorbis')
+
+        Promise.all([
+            fetch(`/video_4_seg${segmentIndex}.webm`).then(r => r.arrayBuffer()),
+            fetch(`/audio_seg${segmentIndex}.webm`).then(r => r.arrayBuffer())
+        ]).then(([videoData, audioData]) => {
+            videoBuffer.appendBuffer(videoData)
+            audioBuffer.appendBuffer(audioData)
+            videoBuffer.addEventListener("updateend", function a() {
+
+                resolveOuter(mediaSource)
+
+                videoBuffer.removeEventListener("updateend", a)
+            })
+        }).catch(err => {
+                console.error("Failed to fetch segment", segmentIndex, err)
+        })
+    })
+    return promise
+}
+
+
 window.addEventListener("load", function () {
     const hamburger = document.querySelector(".hamburger")
     const menu = this.document.querySelector(".menu")
@@ -71,4 +122,29 @@ window.addEventListener("load", function () {
     const clock = this.document.querySelector(".clock")
     updateClock(clock)
     this.setInterval(updateClock, 1000 * 10, clock)
+
+    let segmentIndex = 0
+
+    let prev = null
+    async function createTransition() {
+        let video = createVideoPlayer()
+        this.document.body.appendChild(video)
+        let mediaSource = await playSegment(video, segmentIndex)
+        segmentIndex++
+        if (prev) {
+            prev.classList.toggle('fade-in')
+            prev.classList.toggle('fade-out')
+            prev.muted = true
+            let toDelete = prev
+            setTimeout(() => {
+                toDelete.src = ""
+                toDelete.remove()
+            }, 1000)
+        }
+        prev = video
+        setTimeout(createTransition, (mediaSource.duration * 1000) - 1000)
+    }
+
+    createTransition()
+
 })
