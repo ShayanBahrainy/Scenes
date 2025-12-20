@@ -1,4 +1,5 @@
 window.addEventListener('DOMContentLoaded', function () {
+    console.log("window event added")
     const deleteButtons = document.querySelectorAll('.delete-button');
     deleteButtons.forEach(function (button) {
         button.addEventListener('click', function () {
@@ -27,6 +28,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const backButton = this.document.querySelector('.back-button');
     backButton.addEventListener('click', function () {
+        console.log("back click")
         window.location = '/admin/dashboard/';
     })
 })
