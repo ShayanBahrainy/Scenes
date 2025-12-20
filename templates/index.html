@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <link href="/static/index.css" rel="stylesheet">
         <script src="/index.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scenery - a peaceful place to be on the internet.</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Scenery - a streaming service that plays peaceful videos of random scenes, created by Shayan Bahrainy.">
     </head>
     <body>
         {% if message %}
@@ -29,11 +32,11 @@
             {% else %}
                 <button onclick="location='/login-start'" class="menu-button">Login</button>
             {% endif %}
-                <a onclick="location='/about-me'" class="menu-link about-me">About Me</a>
+                <a href="/about-me" class="menu-link about-me">About Me</a>
                 {% if is_admin %}
-                <a onclick="location='/admin/dashboard'" class="menu-link admin">Admin</a>
+                <a href="/admin/dashboard" class="menu-link admin">Admin</a>
                 {% endif %}
-                <a onclick="location='/faq'" class="menu-link faq">FAQ</a>
+                <a href="/faq" class="menu-link faq">FAQ</a>
         </div>
     <p class="clock"></p>
     </body>
