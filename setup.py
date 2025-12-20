@@ -4,7 +4,7 @@ import os
 
 subprocess.run([sys.executable, "-m", "venv", os.path.expanduser("~/scenery_env")])
 
-venv_pip = os.path.expanduser("~/scenery_env/bin/pip")
+venv_pip = os.path.expanduser("~/scenery_env/bin/python -m pip")
 
 subprocess.run([venv_pip, "install", "-r", "requirements.txt"])
 
