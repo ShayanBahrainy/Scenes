@@ -39,8 +39,6 @@ SCENERY_PLUS_ID = os.environ.get("SCENERY_PLUS_ID")
 ADMIN_EMAIL = os.environ.get("SCENERY_ADMIN_EMAIL")
 
 STRIPE_ENDPOINT_SECRET = os.environ.get("STRIPE_ENDPOINT_SECRET")
-if not STRIPE_ENDPOINT_SECRET:
-    STRIPE_ENDPOINT_SECRET = "whsec_5573f2cd2f99db84972c5971d7ad9afa3493d90610d026784ee3df5381b571c8"
 
 @app.route("/")
 def index(message=None):
