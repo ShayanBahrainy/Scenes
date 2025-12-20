@@ -1,12 +1,6 @@
 import subprocess
-import sys
-import os
 
-subprocess.run([sys.executable, "-m", "venv", os.path.expanduser("~/scenery_env")])
-
-venv_pip = os.path.expanduser("~/scenery_env/bin/python -m pip")
-
-subprocess.run([venv_pip, "install", "-r", "requirements.txt"])
+subprocess.run(["pip", "install", "-r", "requirements.txt"])
 
 env_template = """
 RESEND_API_KEY={RESEND_API_KEY}
