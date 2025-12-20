@@ -30,3 +30,4 @@ window.addEventListener('DOMContentLoaded', function () {
         window.location = '/admin/dashboard/';
     })
 })
+console.log('test123')
