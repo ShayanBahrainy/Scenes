@@ -1,5 +1,5 @@
-window.addEventListener('DOMContentLoaded', function () {
-    console.log("window event added")
+const startupCode = () => {
+    console.log('startup code')
     const deleteButtons = document.querySelectorAll('.delete-button');
     deleteButtons.forEach(function (button) {
         button.addEventListener('click', function () {
@@ -31,5 +31,11 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("back click")
         window.location = '/admin/dashboard/';
     })
-})
+}
+if (document.readyState != 'loading') {
+    startupCode()
+}
+else {
+    window.addEventListener('DOMContentLoaded', startupCode)
+}
 console.log('test123')
