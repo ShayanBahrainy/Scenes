@@ -1,3 +1,11 @@
+import os
+
+os.popen("python -m venv ~/scenery")
+
+os.popen("source ~/scenery/activate")
+
+os.popen("pip install -r requirements.txt")
+
 env_template = """
 RESEND_API_KEY={RESEND_API_KEY}
 SCENERY_FROM_EMAIL={SCENERY_FROM_EMAIL}
@@ -7,7 +15,6 @@ SCENERY_ADMIN_EMAIL={SCENERY_ADMIN_EMAIL}
 SCENERY_DB_URI={SCENERY_DB_URI}
 STRIPE_ENDPOINT_SECRET={STRIPE_ENDPOINT_SECRET}
 """
-
 
 resend_api_key = input("Resend API Key: ")
 scenery_from_email = input("\033[F\033[2KWhat email do you want outgoing mail to be sent from: ")
