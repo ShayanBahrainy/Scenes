@@ -29,7 +29,7 @@
     height: 100%;
     background-color: var(--background-color);
     width: 20%;
-    z-index: 1;
+    z-index: 2;
     border-radius: 0.5%;
 }
 
@@ -144,7 +144,7 @@
     left: 25%;
     font-size: 3em;
     top: 0%;
-    z-index: 2;
+    z-index: 1;
     color: var(--background-color);
     justify-content: center;
     text-shadow: 1px 1px var(--secondary-color);
@@ -173,7 +173,7 @@
     transform: translateX(-50%);
     top: 15%;
     height: 80%;
-    z-index: 1;
+    z-index: 0;
     aspect-ratio: auto;
     object-fit: cover;   /* or contain */
 }
@@ -186,7 +186,7 @@
     height: 100vh;
     object-fit: cover;
     filter: blur(20px) brightness(100%);
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
 }
 
@@ -237,6 +237,7 @@ body {
         font-size: 5em;
         left: 75%;
         z-index: 2;
+        top: 1%;
     }
 
     .menu {
@@ -288,7 +289,7 @@ body {
     }
 
     .clock {
-        font-size: 1em;
+        display: none;
     }
 
 }
