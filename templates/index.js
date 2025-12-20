@@ -1,3 +1,5 @@
+const MAX_QUALITY = {{max_quality}}
+
 function updateClock(clock) {
     clock.innerText = generateText()
 }
@@ -16,7 +18,7 @@ function getNumAsText(num) {
     if (num == 17) return "seventeen"
     if (num == 16) return "sixteen"
     if (num == 15) return "fifteen"
-    if (num == 14) return "forteen"
+    if (num == 14) return "fourteen"
     if (num == 13) return "thirteen"
     if (num == 12) return "twelve"
     if (num == 11) return "eleven"
@@ -45,52 +47,90 @@ function generateText() {
 
 function createVideoPlayer() {
     const video = document.createElement("video")
-    video.classList = "fade-in video-player"
+    video.classList = "video-player"
     video.autoplay = true
+    video.preload = "metadata"
+    video.playsInline = true
+    video.oncontextmenu = () => (false);
+
+    const background_video = document.createElement("video")
+    background_video.classList = "background-player"
+    background_video.autoplay = true
+    background_video.preload = "metadata"
+    background_video.playsInline = true
+    background_video.oncontextmenu = () => (false);
 
     const video_frame = document.createElement("div")
-    video_frame.classList = "video-frame"
+    video_frame.classList = "video-frame fade-in"
 
     video_frame.appendChild(video)
+    video_frame.appendChild(background_video)
 
     return video_frame
 }
 
-function playSegment(videoFrame, segmentIndex) {
+/**
+ * 
+ * @param {HTMLDivElement} videoFrame
+ * @param {Number} segmentQuality
+ * @param {Number} segmentIndex
+ * @returns {Promise<Number>}
+ */
 
-    const videoPlayer = videoFrame.children[0]
+function playSegment(videoFrame, segmentQuality, segmentIndex) {
 
-    let resolveOuter
-    function saveResolve(resolve) {
-        resolveOuter = resolve
+    const players = videoFrame.children
+
+    const videoSource = document.createElement("source")
+    videoSource.src = `/video_${segmentQuality}_seg${segmentIndex}.webm`
+    videoSource.type = "video/webm"
+
+    for (const videoPlayer of players) {
+        videoPlayer.innerHTML = ""
+        videoPlayer.appendChild(videoSource.cloneNode())
     }
-    let promise = new Promise(saveResolve)
 
-    let mediaSource = new MediaSource()
+    videoSource.remove()
 
-    videoPlayer.src = URL.createObjectURL(mediaSource)
+    let outerResolve
 
-    mediaSource.addEventListener("sourceopen", () => {
-        const videoBuffer = mediaSource.addSourceBuffer('video/webm codecs="vp9"')
-        const audioBuffer = mediaSource.addSourceBuffer('audio/webm codecs="vorbis')
-
-        Promise.all([
-            fetch(`/video_4_seg${segmentIndex}.webm`).then(r => r.arrayBuffer()),
-            fetch(`/audio_seg${segmentIndex}.webm`).then(r => r.arrayBuffer())
-        ]).then(([videoData, audioData]) => {
-            videoBuffer.appendBuffer(videoData)
-            audioBuffer.appendBuffer(audioData)
-            videoBuffer.addEventListener("updateend", function a() {
-
-                resolveOuter(mediaSource)
-
-                videoBuffer.removeEventListener("updateend", a)
-            })
-        }).catch(err => {
-                console.error("Failed to fetch segment", segmentIndex, err)
-        })
+    let promise = new Promise(function (resolve, reject) {
+        outerResolve = resolve
     })
+
+    videoFrame.children[0].addEventListener("loadedmetadata", function (ev) {
+        outerResolve(ev.target.duration)
+    })
+
     return promise
+}
+
+
+let blockOut = 0
+
+/**
+ * 
+ * @param {Number} currentQuality
+ * @param {HTMLVideoElement} videoPlayer
+ *
+ * @returns {Number}
+ */
+
+function getQuality(currentQuality, videoPlayer) {
+    let dropStats = videoPlayer.getVideoPlaybackQuality()
+    const dropRatio = dropStats.droppedVideoFrames / dropStats.totalVideoFrames;
+
+    if (dropRatio > 0.05 && currentQuality > 1) {
+        currentQuality--;
+        blockOut = 15;
+    }
+    else if (dropRatio < Math.pow(currentQuality + 1, -2) && currentQuality < MAX_QUALITY && blockOut <= 0) {
+        currentQuality++;
+    }
+    console.log(`Dropping ${dropRatio * 100}% of frames.`)
+    console.log(`Current Quality: ${currentQuality}`)
+
+    return currentQuality;
 }
 
 
@@ -124,25 +164,32 @@ window.addEventListener("load", function () {
     this.setInterval(updateClock, 1000 * 10, clock)
 
     let segmentIndex = 0
+    let currentQuality = 1
 
     let prev = null
     async function createTransition() {
         let video = createVideoPlayer()
         this.document.body.appendChild(video)
-        let mediaSource = await playSegment(video, segmentIndex)
-        segmentIndex++
+
         if (prev) {
             prev.classList.toggle('fade-in')
             prev.classList.toggle('fade-out')
             prev.muted = true
             let toDelete = prev
             setTimeout(() => {
-                toDelete.src = ""
                 toDelete.remove()
             }, 1000)
+            currentQuality = getQuality(currentQuality, prev.children[0])
         }
+
         prev = video
-        setTimeout(createTransition, (mediaSource.duration * 1000) - 1000)
+
+        let duration = await playSegment(video, currentQuality, segmentIndex)
+        segmentIndex++
+
+        blockOut--;
+
+        setTimeout(createTransition, Math.max(duration - 1, 0) * 1000)
     }
 
     createTransition()

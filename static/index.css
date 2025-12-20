@@ -1,30 +1,5 @@
 @import url('theme.css');
 
-.vjs-big-play-button {
-    background-color: var(--background-color) !important;
-}
-
-.vjs-icon-placeholder {
-    color: var(--secondary-color) !important;
-    background-color: var(--background-color) !important;
-}
-
-.vjs-control-bar {
-    background-color: var(--background-color) !important;
-}
-
-.vjs-volume-level {
-    color: var(--tint-color) !important;
-}
-
-.vjs-control-bar * {
-    background-color: inherit;
-}
-
-.vjs-live-display {
-    color: var(--secondary-color) !important;
-}
-
 .hamburger {
     position: fixed;
     left: 92.5%;
@@ -34,7 +9,7 @@
     border: none;
     color: var(--secondary-color);
     font-size: 4em;
-    z-index: 1;
+    z-index: 2;
 }
 
 .opened-hamburger {
@@ -54,7 +29,7 @@
     height: 100%;
     background-color: var(--background-color);
     width: 20%;
-    z-index: 0;
+    z-index: 1;
     border-radius: 0.5%;
 }
 
@@ -90,7 +65,7 @@
     color: var(--tint-color);
     width: 80%;
     height: 5%;
-    z-index: 1;
+    z-index: 2;
 }
 
 .menu-button:hover {
@@ -104,7 +79,7 @@
     color: var(--tint-color);
     width: 100%;
     height: 8%;
-    z-index: 1;
+    z-index: 3;
 }
 
 .admin-button:hover {
@@ -117,7 +92,7 @@
     display: block;
     border: none;
     color: var(--secondary-color);
-    z-index: 1;
+    z-index: 3;
     text-decoration: none;
 }
 
@@ -172,6 +147,7 @@
     z-index: 2;
     color: var(--background-color);
     justify-content: center;
+    text-shadow: 1px 1px var(--secondary-color);
 }
 
 .fade-in {
@@ -192,35 +168,26 @@
 }
 
 .video-player {
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 15%;
+    height: 80%;
+    z-index: 1;
+    aspect-ratio: auto;
     object-fit: cover;   /* or contain */
 }
 
-
-.video-player::after {
-    content: "";
+.background-player {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6));
-    pointer-events: none; /* So it doesn't block interactions */
-    border-radius: inherit;
-}
-
-.video-player::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
-    transform: rotate(45deg);
-    transition: opacity 0.4s ease-in-out;
-    opacity: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    filter: blur(20px) brightness(100%);
+    z-index: 0;
+    pointer-events: none;
 }
 
 .videoplayer:hover::before {

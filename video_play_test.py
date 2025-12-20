@@ -5,19 +5,12 @@ import os
 
 app = Flask(__name__)
 app.config['RELOAD_TEMPLATES'] = True
-VIDEO_FOLDER="test/"
+VIDEO_FOLDER="videos/"
 streamer = Streamer(VIDEO_FOLDER, 10)
 
 @app.route("/")
 def index():
     return render_template("play_test.html")
-
-@app.route("/manifest.mpd")
-def master_playlist():
-    r = Response(streamer.get_master_playlist())
-    r.headers["Content-Type"] = "application/dash+xml"
-    return r
-
 
 @app.route("/video_<quality>_seg<seg_num>.webm")
 def return_video_file(quality, seg_num):

@@ -24,13 +24,15 @@ if not HOST:
 
 email_manager = EmailManager(HOST)
 emailsendmanager = EmailSendManager(email_manager)
-PREMIUM_QUALITIES = [Streamer.TEN_EIGHTY_P]
+
+FREE_QUALITY = 2
+PREMIUM_QUALITY = 4
 
 
 VIDEO_FOLDER = "videos/"
 DRAFT_FOLDER = "drafts/"
 
-streamer = Streamer(VIDEO_FOLDER, PREMIUM_QUALITIES)
+streamer = Streamer(VIDEO_FOLDER, 5)
 
 SCENERY_PLUS_ID = os.environ.get("SCENERY_PLUS_ID")
 
@@ -43,7 +45,7 @@ if not STRIPE_ENDPOINT_SECRET:
 @app.route("/")
 def index(message=None):
     if "auth" in request.cookies:
-        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).first()
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
         if cookie:
             return render_template("index.html", user=cookie.user, message=message, is_admin=cookie.user.email==ADMIN_EMAIL)
     return render_template("index.html", message=message)
@@ -58,6 +60,15 @@ def login_start():
             return render_template("create_or_login.html", error="Please enter your email." if not email else None)
         email_manager.send_code(email)
         return redirect("/login-code/")
+
+@app.route('/index.js')
+def index_js():
+    if "auth" in request.cookies:
+        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).first()
+        if cookie:
+            if cookie.email == ADMIN_EMAIL or cookie.user.subscription_status == "PLUS":
+                return Response(render_template('index.js', max_quality=PREMIUM_QUALITY), mimetype="text/javascript")
+    return Response(render_template('index.js', max_quality=FREE_QUALITY), mimetype="text/javascript")
 
 
 @app.route("/login-code/", methods=["POST", "GET"])
@@ -265,56 +276,68 @@ def stripe_webhook():
     db.session.commit()
     return jsonify(success=True)
 
-@app.route("/scenery.m3u8")
-def master_playlist():
+
+@app.route("/video_<quality>_seg<seg_num>.webm")
+def return_video_file(quality, seg_num):
+    user = None
     if "auth" in request.cookies:
         cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
         if cookie:
-            if cookie.user.subscription_status == SubscriptionStatus.PLUS:
-                r = Response(streamer.get_master_playlist(True))
-                r.headers["Content-Type"] = "application/vnd.apple.mpegurl"
-                return r
-    r = Response(streamer.get_master_playlist(True))
-    r.headers["Content-Type"] = "application/vnd.apple.mpegurl"
-    return r
+            user = cookie.user
+    try:
+        quality_num = int(quality)
+    except ValueError:
+        return abort(400)
 
-@app.route("/<quality>.m3u8")
-def get_playlist(quality):
-    if quality not in streamer.playlists.keys():
-        return make_response(f"No playlist with name '{quality}'", 404)
+    if not user and quality_num > FREE_QUALITY:
+        return abort(403)
 
-    if quality in PREMIUM_QUALITIES:
-        if "auth" not in request.cookies:
-            return make_response("Invalid authentication", 401)
+    if user and (user.subscription_status != "PLUS" and user.email != ADMIN_EMAIL) and quality_num > FREE_QUALITY:
+        return abort(403)
 
-        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
-        if not cookie:
-            return make_response("Invalid authentication", 401)
+    folder = streamer.get_segment_folder(seg_num)
+    path = safe_join(VIDEO_FOLDER, safe_join(folder, "video_" + quality + ".webm"))
+    file_size = os.path.getsize(path)
+    range_header = request.headers.get("Range")
 
-        if cookie.user.subscription_status != SubscriptionStatus.PLUS:
-            return make_response("Not authorized", 403)
+    if range_header == None:
+        return send_file(path, mimetype="video/webm")
 
-    r = Response(streamer.get_media_playlist(quality))
-    r.headers["Content-Type"] = "application/vnd.apple.mpegurl"
-    return r
+    bytes = range_header.strip().split("=")[1]
+    start, end = bytes.split("-")
 
-@app.route("/videos/<video_name>/<quality>/<file_name>.ts")
-def return_video_file(video_name, quality, file_name):
-    if quality in PREMIUM_QUALITIES:
-        if "auth" not in request.cookies:
-            return make_response("Invalid authentication", 401)
+    try:
+        start = int(start)
+    except:
+        abort(400, "Invalid range header")
 
-        cookie = db.session.query(Cookie).filter(Cookie.cookie == request.cookies["auth"]).one_or_none()
-        if not cookie:
-            return make_response("Invalid authentication", 401)
+    try:
+        end = int(end)
+    except:
+        end = file_size - 1
 
-        if cookie.user.subscription_status != SubscriptionStatus.PLUS:
-            return make_response("Not authorized", 403)
+    if start >= file_size or end > file_size or start > end:
+        abort(416, "Requested Range Not Satisfiable")
 
-    path = safe_join(safe_join(video_name, quality), file_name+".ts")
-    r = send_from_directory(VIDEO_FOLDER, path, mimetype="video/MP2T")
+    if type(end) == int:
+        length = end - start + 1
+    else:
+        length = file_size
 
-    return r
+    with open(path, "rb") as f:
+        f.seek(start)
+        data = f.read(length)
+
+    return Response(
+            data,
+            status=206,
+            mimetype="video/webm",
+            headers={
+                "Content-Range": f"bytes {start}-{end}/{file_size}",
+                "Accept-Ranges": "bytes",
+                "Content-Length": str(length)
+            }
+        )
 
 @app.route("/about-me")
 def about_me():
@@ -459,6 +482,10 @@ def admin_email_create():
 
     return "Email created."
 
+@app.route("/favicon.ico")
+def favicon():
+    return send_file('static/favicon.ico')
+
 @app.route("/admin/email/edit/<email_id>", methods=["GET", "POST"])
 def admin_email_edit(email_id):
     if not admin_auth(request, ADMIN_EMAIL):
@@ -545,18 +572,21 @@ def type_master(type, video_name):
 
 @app.route("/drafts/<video_name>/<quality>/<filename>", methods=["GET"])
 def serve_draft(video_name, quality, filename):
-    if admin_auth(request, ADMIN_EMAIL):
-        path = safe_join(safe_join(safe_join("drafts/", video_name), quality), filename)
-        return send_file(path)
-    return abort(401)
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+    path = safe_join(safe_join(safe_join("drafts/", video_name), quality), filename)
+    return send_file(path)
 
 @app.errorhandler(404)
 def error_404(e):
     return Response(render_template("404.html"), status=404)
 
+@app.after_request
+def post_processing(r: Request):
+    r.headers['Accept-Ranges'] = "bytes"
+    return r
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    streamer.start()
     emailsendmanager.start()
     app.run("0.0.0.0")
