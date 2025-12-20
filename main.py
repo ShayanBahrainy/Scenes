@@ -388,7 +388,7 @@ def admin_view_drafts():
     if request.method == "GET":
         video_drafts = []
         for video in os.listdir('drafts/'):
-            draft = Video('/drafts/' + video + '/master.m3u8', video)
+            draft = Video('/drafts/' + video + '.webm', video)
             video_drafts.append(draft)
         return render_template("admin_drafts.html", drafts=video_drafts, is_mobile=parsed_useragent.is_mobile)
     if request.method == "PUT":
@@ -408,6 +408,13 @@ def admin_view_drafts():
             return abort(400)
         return "Draft deleted"
 
+@app.route("/admin/videos/<video_name>.webm/")
+def get_video(video_name):
+    if not admin_auth(request, ADMIN_EMAIL):
+        return abort(401)
+
+    return send_from_directory(VIDEO_FOLDER, f"{video_name}/video_4.webm")
+
 @app.route("/admin/published/", methods=["GET", "PUT"])
 def admin_published():
     if not admin_auth(request, ADMIN_EMAIL):
@@ -418,7 +425,7 @@ def admin_published():
         VIDEOS_PER_PAGE = 10
         videos = []
         for folder in os.listdir(VIDEO_FOLDER):
-            video = Video(os.path.join("/" + VIDEO_FOLDER, f"{folder}/master.m3u8"), video_name=folder)
+            video = Video(f"/admin/{VIDEO_FOLDER}/{folder}.webm", video_name=folder)
             videos.append(video)
         page = request.args.get("page")
         if page:
@@ -552,27 +559,11 @@ def admin_email_send(email_id):
 
     return "Email will be sent."
 
-
-@app.route("/videos/<video_name>/<quality>/<filename>.m3u8")
-def admin_return_playlist(video_name, quality, filename):
+@app.route("/drafts/<video_name>.webm")
+def serve_draft(video_name):
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
-    playlist_path = safe_join(safe_join(safe_join("videos/", video_name), quality), filename+".m3u8")
-    with open(playlist_path) as f:
-        playlist = f.read()
-    return Streamer.__add_basepath__(playlist, f"/videos/{video_name}/{quality}/")
-
-@app.route("/<type>/<video_name>/master.m3u8")
-def type_master(type, video_name):
-    if not admin_auth(request, ADMIN_EMAIL):
-        return abort(401)
-    return Response(VideoProcessor.DRAFT_MASTER_TEMPLATE.format(video_folder_path=f"/{type}/"+video_name), mimetype="text/plain")
-
-@app.route("/drafts/<video_name>/<quality>/<filename>", methods=["GET"])
-def serve_draft(video_name, quality, filename):
-    if not admin_auth(request, ADMIN_EMAIL):
-        return abort(401)
-    path = safe_join(safe_join(safe_join("drafts/", video_name), quality), filename)
+    path = safe_join("drafts/", video_name + "/video_4.webm")
     return send_file(path)
 
 @app.errorhandler(404)
@@ -583,6 +574,7 @@ def error_404(e):
 def post_processing(r: Request):
     r.headers['Accept-Ranges'] = "bytes"
     return r
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

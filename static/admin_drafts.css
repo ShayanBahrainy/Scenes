@@ -6,9 +6,6 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 2em;
-    position: absolute;
-    height: 90%;
-    width: 99%;
 }
 
 .video-label {
@@ -18,8 +15,15 @@
 }
 
 .video {
-    position: relative;
+    flex: 0 1 300px;
 }
+
+.video video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 
 .delete-button {
     background-color: var(--secondary-color);

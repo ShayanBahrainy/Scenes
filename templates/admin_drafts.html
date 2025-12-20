@@ -2,7 +2,6 @@
 <html>
     <head>
         <title>View drafts - Scenery</title>
-        <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
         <link href="/static/admin_drafts.css" rel="stylesheet">
         <script src="/static/admin_drafts.js"></script>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,22 +13,9 @@
         {% for draft in drafts %}
         <div class="video">
             <video
-            id="my-video"
-            class="video-js video-player"
-            controls
-            preload="auto"
-            width="320"
-            height="132"
-            data-setup="{}"
-        >
-            <source src="{{draft.src}}" type="application/x-mpegurl">
-            <p class="vjs-no-js">
-            To view this video please enable JavaScript, and consider upgrading to a
-            web browser that
-            <a href="https://videojs.com/html5-video-support/" target="_blank"
-                >supports HTML5 video</a
-            >
-            </p>
+            class="video-player"
+            controls>
+            <source src="{{draft.src}}" type="video/webm">
         </video>
         <p class="video-label">{{draft.video_name}}</p>
         <button class="delete-button" data-video-name="{{draft.video_name}}">Delete</button>
@@ -37,6 +23,5 @@
         </div>
         {% endfor %}
         </div>
-        <script src="https://vjs.zencdn.net/8.23.4/video.min.js"></script>
     </body>
 </html>
