@@ -393,7 +393,7 @@ def admin_view_drafts():
     parsed_useragent = user_agents.parse(user_agent)
     if request.method == "GET":
         video_drafts = []
-        for video in os.listdir('drafts/'):
+        for video in os.listdir(DRAFT_FOLDER):
             draft = Video('/drafts/' + video + '.webm', video)
             video_drafts.append(draft)
         return render_template("admin_drafts.html", drafts=video_drafts, is_mobile=parsed_useragent.is_mobile)
