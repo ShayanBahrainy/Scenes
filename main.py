@@ -28,9 +28,11 @@ emailsendmanager = EmailSendManager(email_manager)
 FREE_QUALITY = 2
 PREMIUM_QUALITY = 4
 
-
-VIDEO_FOLDER = "videos/"
-DRAFT_FOLDER = "drafts/"
+VIDEO_FOLDER = os.environ.get("VIDEO_FOLDER")
+DRAFT_FOLDER = os.environ.get("DRAFT_FOLDER")
+if not VIDEO_FOLDER or not DRAFT_FOLDER:
+    VIDEO_FOLDER = "videos/"
+    DRAFT_FOLDER = "drafts/"
 
 streamer = Streamer(VIDEO_FOLDER, 5)
 
