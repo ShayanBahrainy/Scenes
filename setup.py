@@ -9,14 +9,24 @@ SCENERY_DB_URI={SCENERY_DB_URI}
 
 
 resend_api_key = input("Resend API Key: ")
-scenery_from_email = input("What email do you want outgoing mail to be sent from: ")
-stripe_key = input("Stripe API Key: ")
-scenery_plus_id = input("Price id of the subscription (Found in Stripe Dashboard): ")
-scenery_admin_email = input("Admin email: ")
-scenery_db_uri = input("Database URI: ")
+scenery_from_email = input("\033[F\033[2KWhat email do you want outgoing mail to be sent from: ")
+stripe_key = input("\033[F\033[2KStripe API Key: ")
+scenery_plus_id = input("\033[F\033[2KPrice id of the subscription (Found in Stripe Dashboard): ")
+scenery_admin_email = input("\033[F\033[2K Admin email: ")
+scenery_db_uri = input("\033[F\033[2KDatabase URI: ")
 
+ans = ""
+while ans != "y" and ans != "n":
+    ans = input("\033[F\033[2KAre we running on a domain (y/n): ")
+
+scenery_host = None
+if ans == "y":
+    scenery_host = input("\033[F\033[2KEnter the domain here:")
 
 with open(".env", "w") as f:
-    f.write(env_template.format(RESEND_API_KEY=resend_api_key, SCENERY_FROM_EMAIL=scenery_from_email, STRIPE_KEY=stripe_key, SCENERY_PLUS_ID=scenery_plus_id, SCENERY_ADMIN_EMAIL=scenery_admin_email, SCENERY_DB_URI=scenery_db_uri))
+    env = env_template.format(RESEND_API_KEY=resend_api_key, SCENERY_FROM_EMAIL=scenery_from_email, STRIPE_KEY=stripe_key, SCENERY_PLUS_ID=scenery_plus_id, SCENERY_ADMIN_EMAIL=scenery_admin_email, SCENERY_DB_URI=scenery_db_uri)
+    if scenery_host:
+        env += f"\nSCENERY_DOMAIN={scenery_host}"
+    f.write(env)
 
-print("Environment has been configured!\nExiting...")
+print("\033[F\033[2KEnvironment has been configured!\nExiting...")
