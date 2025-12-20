@@ -2,7 +2,7 @@ import subprocess
 import sys
 import os
 
-subprocess.run([sys.executable, "-m", "venv","--copy", os.path.expanduser("~/scenery_env")])
+subprocess.run([sys.executable, "-m", "venv","--copies", os.path.expanduser("~/scenery_env")])
 
 venv_pip = os.path.expanduser("~/scenery_env/bin/pip")
 
