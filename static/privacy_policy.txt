@@ -1,0 +1,3 @@
+This website uses third-party services to operate, including Google Analytics for usage analytics and Stripe for payment processing. Personal data may be collected by these services as part of their functionality. We do not sell personal data.
+You may use the website without an account. Some information will be collected, and analyzed in aggregate to see how the website is used.
+Personal information is only collected for the purposes of managing subscriptions if you create an account.

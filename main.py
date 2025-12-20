@@ -228,6 +228,10 @@ def checkout_return():
     checkout_session = stripe.checkout.Session.retrieve(session_id)
     return render_template("checkout_return.html", status=checkout_session.status)
 
+@app.route("/privacy")
+def privacy_policy():
+    return send_file("static/privacy_policy.txt")
+
 @app.route("/stripe-event/", methods=["POST"])
 def stripe_webhook():
     payload = request.data
