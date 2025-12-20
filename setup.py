@@ -2,9 +2,9 @@ import subprocess
 import sys
 import os
 
-subprocess.run([sys.executable, "-m", "venv", os.path.expanduser("~/scenery")])
+subprocess.run([sys.executable, "-m", "venv","--copy", os.path.expanduser("~/scenery_env")])
 
-venv_pip = os.path.expanduser("~/scenery/bin/pip")
+venv_pip = os.path.expanduser("~/scenery_env/bin/pip")
 
 subprocess.run([venv_pip, "install", "-r", "requirements.txt"])
 
