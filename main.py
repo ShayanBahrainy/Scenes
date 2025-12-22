@@ -431,7 +431,7 @@ def admin_published():
         VIDEOS_PER_PAGE = 10
         videos = []
         for folder in os.listdir(VIDEO_FOLDER):
-            video = Video(f"/admin/{VIDEO_FOLDER}/{folder}.webm", video_name=folder)
+            video = Video(f"/admin/videos/{folder}.webm", video_name=folder)
             videos.append(video)
         page = request.args.get("page")
         if page:
