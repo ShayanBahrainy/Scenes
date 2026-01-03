@@ -394,7 +394,7 @@ def admin_view_drafts():
     if request.method == "GET":
         video_drafts = []
         for video in os.listdir(DRAFT_FOLDER):
-            draft = Video('/drafts/' + video + '.webm', video)
+            draft = Video('/admin/drafts/' + video + '.webm', video)
             video_drafts.append(draft)
         return render_template("admin_drafts.html", drafts=video_drafts, is_mobile=parsed_useragent.is_mobile)
     if request.method == "PUT":
@@ -565,11 +565,11 @@ def admin_email_send(email_id):
 
     return "Email will be sent."
 
-@app.route("/drafts/<video_name>.webm")
+@app.route("/admin/drafts/<video_name>.webm")
 def serve_draft(video_name):
     if not admin_auth(request, ADMIN_EMAIL):
         return abort(401)
-    path = safe_join("drafts/", video_name + "/video_4.webm")
+    path = safe_join(DRAFT_FOLDER, video_name + "/video_4.webm")
     return send_file(path)
 
 @app.errorhandler(404)
